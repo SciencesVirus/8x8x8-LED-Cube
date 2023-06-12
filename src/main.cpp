@@ -55,12 +55,21 @@ void streamCallback(MultiPathStreamData stream) {
       } else if (strcmp(childPath, "/selected") == 0) {
         Serial.println("masok if 2");
 
-        if (value == "First Animation") {
+        if (value == "Rain Wave") {
           selected = 1;
-        } else if (value == "Second Animation") {
+        } else if (value == "Folder") {
           selected = 2;
+        } else if (value == "Sinewave") {
+          selected = 3;
+        } else if (value == "Bouncy") {
+          selected = 4;
+        } else if (value == "Color Wheel") {
+          selected = 5;
+        } else if (value == "Harlem Shake") {
+          selected = 6;
         } 
-        // selected = value.c_str();
+
+        Serial.println(selected);
       }
     } else {
       Serial.println("error cok");
