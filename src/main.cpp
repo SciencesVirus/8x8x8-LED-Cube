@@ -17,25 +17,53 @@ FirebaseData fbdo;
 FirebaseAuth auth;
 FirebaseConfig config;
 
+String parentPath = "/ledState";
+String childPath[2] = {"/on", "/selected"};
+
+bool on = false;
+String selected = "";
+
 //--------- FIREBASE CALLBACKS ---------//
 
-void streamCallback(StreamData data) {
-  noInterrupts();
-  Serial.printf("stream path, %s\nevent path, %s\ndata type, %s\nevent type, %s\n\n",
-                data.streamPath().c_str(),
-                data.dataPath().c_str(),
-                data.dataType().c_str(),
-                data.eventType().c_str());
-  printResult(data); // see addons/RTDBHelper.h
-  Serial.println();
 
-  if (data.boolData() == true) {
-    digitalWrite(BUILTIN_LED, HIGH);
-  } else {
-    digitalWrite (BUILTIN_LED, LOW);
+void streamCallback(MultiPathStreamData stream) {
+  // int numChild = 2;
+  size_t numChild = sizeof(childPath) / sizeof(childPath[0]);
+  Serial.println("masok");
+
+  for (size_t i = 0; i < numChild; i++) {
+    Serial.println("masok loop");
+    Serial.println(childPath[i]);
+    if (stream.get(childPath[i])) {
+      Serial.printf("path: %s, event: %s, type: %s, value: %s%s", stream.dataPath.c_str(), stream.eventType.c_str(), stream.type.c_str(), stream.value.c_str(), i < numChild - 1 ? "\n" : "");
+      Serial.println("masok if");
+
+      const char* childPath = stream.dataPath.c_str();
+      String value = stream.value.c_str();
+
+      // Perform different actions based on the child path
+      if (strcmp(childPath, "/on") == 0) {
+        Serial.println("masok if 1");
+        Serial.println(value);
+        if (value == "true") {
+          digitalWrite(BUILTIN_LED, HIGH);
+          // on = true;
+        } else {
+          digitalWrite(BUILTIN_LED, LOW);
+          // on = false;
+        }
+      } else if (strcmp(childPath, "/selected") == 0) {
+        Serial.println("masok if 2");
+        Serial.println(value.c_str());
+        // selected = value.c_str();
+      }
+    } else {
+      Serial.println("error cok");
+    }
   }
-  Serial.printf("Received stream payload size: %d (Max. %d)\n\n", data.payloadLength(), data.maxPayloadLength());
-  interrupts();
+
+  Serial.println();
+  Serial.printf("Received stream payload size: %d (Max. %d)\n\n", stream.payloadLength(), stream.maxPayloadLength());
 }
 
 void streamTimeoutCallback(bool timeout) {
@@ -45,6 +73,7 @@ void streamTimeoutCallback(bool timeout) {
   if (!stream.httpConnected())
     Serial.printf("error code: %d, reason: %s\n\n", stream.httpCode(), stream.errorReason().c_str());
 }
+
 
 //--------- FIREBASE CALLBACKS ---------//
 
@@ -1773,10 +1802,10 @@ void setup() {
 
   Firebase.reconnectWiFi(true);
 
-  if (!Firebase.beginStream(stream, "/ledState/on"))
-    Serial.printf("sream begin error, %s\n\n", stream.errorReason().c_str());
+  if (!Firebase.beginMultiPathStream(stream, parentPath))
+    Serial.printf("stream begin error, %s\n\n", stream.errorReason().c_str());
 
-  Firebase.setStreamCallback(stream, streamCallback, streamTimeoutCallback);
+  Firebase.setMultiPathStreamCallback(stream, streamCallback, streamTimeoutCallback);
   // WIFI AND FIREBASE
 
 
@@ -1788,13 +1817,43 @@ void setup() {
   timerAlarmEnable(My_timer);
 }
 
+void handleAnimation (bool on, String selected) {
+  if (on == true) {
+    switch (selected) {
+    case 1:
+      rainVersionTwo();
+      break;
+    case 2:
+      folder();
+      break;
+    case 3:
+      sinwaveTwo();
+      break;
+    case 4:
+      bouncyvTwo();
+      break;
+    case 5:
+      color_wheelTWO();
+      break;
+    case 6:
+      harlem_shake();
+      break;
+    
+    default:
+      clean();
+      break;
+    }
+
+  } else {
+    clean();
+  }
+}
+
 void loop() {
-  rainVersionTwo();
-  folder();
-  sinwaveTwo();
-  clean();
-  bouncyvTwo();
-  color_wheelTWO();
-  clean();
-  harlem_shake();
+
+  handleAnimation(on, selected);
+  if (Firebase.ready()) {
+
+  }
+  
 }
