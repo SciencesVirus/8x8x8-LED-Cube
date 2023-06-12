@@ -21,7 +21,7 @@ String parentPath = "/ledState";
 String childPath[2] = {"/on", "/selected"};
 
 bool on = false;
-String selected = "";
+int selected = 0;
 
 //--------- FIREBASE CALLBACKS ---------//
 
@@ -47,14 +47,19 @@ void streamCallback(MultiPathStreamData stream) {
         Serial.println(value);
         if (value == "true") {
           digitalWrite(BUILTIN_LED, HIGH);
-          // on = true;
+          on = true;
         } else {
           digitalWrite(BUILTIN_LED, LOW);
-          // on = false;
+          on = false;
         }
       } else if (strcmp(childPath, "/selected") == 0) {
         Serial.println("masok if 2");
-        Serial.println(value.c_str());
+
+        if (value == "First Animation") {
+          selected = 1;
+        } else if (value == "Second Animation") {
+          selected = 2;
+        } 
         // selected = value.c_str();
       }
     } else {
@@ -228,7 +233,7 @@ void rainVersionTwo() {//****rainVersionTwo****rainVersionTwo****rainVersionTwo*
 
   start = millis();
   // timing animation run
-  while(millis() - start < 20000) {
+  while(millis() - start < 20000 && on == true) {
 
     if(ledcolor < 200) {
       for(addr = 0; addr < leds; addr++) {
@@ -344,7 +349,7 @@ void folder() { //****folder****folder****folder****folder****folder****folder**
 
   start = millis();
 
-  while (millis() - start < 10000) {
+  while (millis() - start < 10000 && on == true) {
     if (top == 1) {
       if (side == 0) {
         //top to left-side
@@ -818,7 +823,7 @@ void bouncyvTwo() { //****bouncyTwo****bouncyTwo****bouncyTwo****bouncyTwo****bo
 
   start = millis();
 
-  while (millis() - start < 15000) {
+  while (millis() - start < 15000 && on == true) {
     direct = random(3);
 
     for (addr = 1; addr < ledcount + 1; addr++) {
@@ -933,7 +938,7 @@ void sinwaveTwo() { //*****sinewaveTwo*****sinewaveTwo*****sinewaveTwo*****sinew
 
   start = millis();
 
-  while (millis() - start < 15000) {
+  while (millis() - start < 15000  && on == true) {
     for (addr = 0; addr < 8; addr++) {
       if (sinewavearray[addr] == 7) {
         sinemult[addr] = -1;
@@ -1026,7 +1031,7 @@ void color_wheel() {
 
   start = millis();
 
-  while (millis() - start < 100000) {
+  while (millis() - start < 100000 && on == true) {
     swiper = random(3);
     ranx = random(16);
     rany = random(16);
@@ -1083,7 +1088,7 @@ void color_wheelTWO() { //*****colorWheelTwo*****colorWheelTwo*****colorWheelTwo
 
   start = millis();
 
-  while (millis() - start < 10000) {
+  while (millis() - start < 10000 && on == true) {
     swiper = random(6);
     select = random(3);
     if (select == 0) {
@@ -1179,39 +1184,41 @@ void harlem_shake() {
   int c21 = 1, c22 = 1, c23 = 1, x2mult = 1, y2mult = 1, z2mult = 1, x2 = 2, y2 = 2, z2 = 2, color_select2, x2o, y2o, z2o;
 
   int counter, i, j, k;
-  for (counter = 0; counter < 150; counter++) {
-    for (i = 0; i < 8; i++) {
-      LED(i, oredx, oredx, 0, 0, 0);
-    }
-    for (i = 0; i < 8; i++) {
-      LED(i, redx, redx, 15, 0, 0);
-    }
 
-    oredx = redx;
-    oredy = redy;
+  while ( on == true) {
+    for (counter = 0; counter < 150; counter++) {
+      for (i = 0; i < 8; i++) {
+        LED(i, oredx, oredx, 0, 0, 0);
+      }
+      for (i = 0; i < 8; i++) {
+        LED(i, redx, redx, 15, 0, 0);
+      }
 
-    for (i = 100; i > time_counter; i--)
-      delay(1);
+      oredx = redx;
+      oredy = redy;
 
-    time_counter = time_counter + timemult;
-    if (time_counter > 100 || time_counter < 10)
-      timemult = timemult * -1;
+      for (i = 100; i > time_counter; i--)
+        delay(1);
 
-    if (redy > 6 || redy < 1) {
-      redmulty = redmulty * -1;
+      time_counter = time_counter + timemult;
+      if (time_counter > 100 || time_counter < 10)
+        timemult = timemult * -1;
 
-    }
+      if (redy > 6 || redy < 1) {
+        redmulty = redmulty * -1;
 
-    if (redx > 6 || redx < 1) {
-      redmult = redmult * -1;
+      }
 
-      cr1 = random(16);
-      cr2 = random(16);
-    }
+      if (redx > 6 || redx < 1) {
+        redmult = redmult * -1;
 
-    redy = redy + redmulty;
-    redx = redx + redmult;
-  } //counter
+        cr1 = random(16);
+        cr2 = random(16);
+      }
+
+      redy = redy + redmulty;
+      redx = redx + redmult;
+    } //counter
 
   for (counter = 0; counter < 85; counter++) {
     for (i = 0; i < 8; i++) {
@@ -1411,323 +1418,324 @@ void harlem_shake() {
     c23 = 0;
   }
 
-  for (counter = 0; counter < 200; counter++) {
+    for (counter = 0; counter < 200; counter++) {
 
-    LED(xo, yo, zo, 0, 0, 0);
-    LED(xo + 1, yo, zo, 0, 0, 0);
-    LED(xo + 2, yo, zo, 0, 0, 0);
-    LED(xo - 1, yo, zo, 0, 0, 0);
-    LED(xo - 2, yo, zo, 0, 0, 0);
-    LED(xo, yo + 1, zo, 0, 0, 0);
-    LED(xo, yo - 1, zo, 0, 0, 0);
-    LED(xo, yo + 2, zo, 0, 0, 0);
-    LED(xo, yo - 2, zo, 0, 0, 0);
-    LED(xo, yo, zo - 1, 0, 0, 0);
-    LED(xo, yo, zo + 1, 0, 0, 0);
-    LED(xo, yo, zo - 2, 0, 0, 0);
-    LED(xo, yo, zo + 2, 0, 0, 0);
+      LED(xo, yo, zo, 0, 0, 0);
+      LED(xo + 1, yo, zo, 0, 0, 0);
+      LED(xo + 2, yo, zo, 0, 0, 0);
+      LED(xo - 1, yo, zo, 0, 0, 0);
+      LED(xo - 2, yo, zo, 0, 0, 0);
+      LED(xo, yo + 1, zo, 0, 0, 0);
+      LED(xo, yo - 1, zo, 0, 0, 0);
+      LED(xo, yo + 2, zo, 0, 0, 0);
+      LED(xo, yo - 2, zo, 0, 0, 0);
+      LED(xo, yo, zo - 1, 0, 0, 0);
+      LED(xo, yo, zo + 1, 0, 0, 0);
+      LED(xo, yo, zo - 2, 0, 0, 0);
+      LED(xo, yo, zo + 2, 0, 0, 0);
 
-    LED(x2o, y2o, z2o, 0, 0, 0);
-    LED(x2o + 1, y2o, z2o, 0, 0, 0);
-    LED(x2o + 2, y2o, z2o, 0, 0, 0);
-    LED(x2o - 1, y2o, z2o, 0, 0, 0);
-    LED(x2o - 2, y2o, z2o, 0, 0, 0);
-    LED(x2o, y2o + 1, z2o, 0, 0, 0);
-    LED(x2o, y2o - 1, z2o, 0, 0, 0);
-    LED(x2o, y2o + 2, z2o, 0, 0, 0);
-    LED(x2o, y2o - 2, z2o, 0, 0, 0);
-    LED(x2o, y2o, z2o - 1, 0, 0, 0);
-    LED(x2o, y2o, z2o + 1, 0, 0, 0);
-    LED(x2o, y2o, z2o - 2, 0, 0, 0);
-    LED(x2o, y2o, z2o + 2, 0, 0, 0);
+      LED(x2o, y2o, z2o, 0, 0, 0);
+      LED(x2o + 1, y2o, z2o, 0, 0, 0);
+      LED(x2o + 2, y2o, z2o, 0, 0, 0);
+      LED(x2o - 1, y2o, z2o, 0, 0, 0);
+      LED(x2o - 2, y2o, z2o, 0, 0, 0);
+      LED(x2o, y2o + 1, z2o, 0, 0, 0);
+      LED(x2o, y2o - 1, z2o, 0, 0, 0);
+      LED(x2o, y2o + 2, z2o, 0, 0, 0);
+      LED(x2o, y2o - 2, z2o, 0, 0, 0);
+      LED(x2o, y2o, z2o - 1, 0, 0, 0);
+      LED(x2o, y2o, z2o + 1, 0, 0, 0);
+      LED(x2o, y2o, z2o - 2, 0, 0, 0);
+      LED(x2o, y2o, z2o + 2, 0, 0, 0);
 
-    LED(xo + 1, yo + 1, zo, 0, 0, 0);
-    LED(xo + 1, yo - 1, zo, 0, 0, 0);
-    LED(xo - 1, yo + 1, zo, 0, 0, 0);
-    LED(xo - 1, yo - 1, zo, 0, 0, 0);
-    LED(xo + 1, yo + 1, zo + 1, 0, 0, 0);
-    LED(xo + 1, yo - 1, zo + 1, 0, 0, 0);
-    LED(xo - 1, yo + 1, zo + 1, 0, 0, 0);
-    LED(xo - 1, yo - 1, zo + 1, 0, 0, 0);
-    LED(xo + 1, yo + 1, zo - 1, 0, 0, 0);
-    LED(xo + 1, yo - 1, zo - 1, 0, 0, 0);
-    LED(xo - 1, yo + 1, zo - 1, 0, 0, 0);
-    LED(xo - 1, yo - 1, zo - 1, 0, 0, 0);
+      LED(xo + 1, yo + 1, zo, 0, 0, 0);
+      LED(xo + 1, yo - 1, zo, 0, 0, 0);
+      LED(xo - 1, yo + 1, zo, 0, 0, 0);
+      LED(xo - 1, yo - 1, zo, 0, 0, 0);
+      LED(xo + 1, yo + 1, zo + 1, 0, 0, 0);
+      LED(xo + 1, yo - 1, zo + 1, 0, 0, 0);
+      LED(xo - 1, yo + 1, zo + 1, 0, 0, 0);
+      LED(xo - 1, yo - 1, zo + 1, 0, 0, 0);
+      LED(xo + 1, yo + 1, zo - 1, 0, 0, 0);
+      LED(xo + 1, yo - 1, zo - 1, 0, 0, 0);
+      LED(xo - 1, yo + 1, zo - 1, 0, 0, 0);
+      LED(xo - 1, yo - 1, zo - 1, 0, 0, 0);
 
-    LED(x2o + 1, y2o + 1, z2o, 0, 0, 0);
-    LED(x2o + 1, y2o - 1, z2o, 0, 0, 0);
-    LED(x2o - 1, y2o + 1, z2o, 0, 0, 0);
-    LED(x2o - 1, y2o - 1, z2o, 0, 0, 0);
-    LED(x2o + 1, y2o + 1, z2o + 1, 0, 0, 0);
-    LED(x2o + 1, y2o - 1, z2o + 1, 0, 0, 0);
-    LED(x2o - 1, y2o + 1, z2o + 1, 0, 0, 0);
-    LED(x2o - 1, y2o - 1, z2o + 1, 0, 0, 0);
-    LED(x2o + 1, y2o + 1, z2o - 1, 0, 0, 0);
-    LED(x2o + 1, y2o - 1, z2o - 1, 0, 0, 0);
-    LED(x2o - 1, y2o + 1, z2o - 1, 0, 0, 0);
-    LED(x2o - 1, y2o - 1, z2o - 1, 0, 0, 0);
+      LED(x2o + 1, y2o + 1, z2o, 0, 0, 0);
+      LED(x2o + 1, y2o - 1, z2o, 0, 0, 0);
+      LED(x2o - 1, y2o + 1, z2o, 0, 0, 0);
+      LED(x2o - 1, y2o - 1, z2o, 0, 0, 0);
+      LED(x2o + 1, y2o + 1, z2o + 1, 0, 0, 0);
+      LED(x2o + 1, y2o - 1, z2o + 1, 0, 0, 0);
+      LED(x2o - 1, y2o + 1, z2o + 1, 0, 0, 0);
+      LED(x2o - 1, y2o - 1, z2o + 1, 0, 0, 0);
+      LED(x2o + 1, y2o + 1, z2o - 1, 0, 0, 0);
+      LED(x2o + 1, y2o - 1, z2o - 1, 0, 0, 0);
+      LED(x2o - 1, y2o + 1, z2o - 1, 0, 0, 0);
+      LED(x2o - 1, y2o - 1, z2o - 1, 0, 0, 0);
 
-    LED(x, y, z, c1, c2, c3);
-    LED(x, y, z - 1, c1, c2, c3);
-    LED(x, y, z + 1, c1, c2, c3);
-    LED(x, y, z - 2, c1, c2, c3);
-    LED(x, y, z + 2, c1, c2, c3);
-    LED(x + 1, y, z, c1, c2, c3);
-    LED(x - 1, y, z, c1, c2, c3);
-    LED(x, y + 1, z, c1, c2, c3);
-    LED(x, y - 1, z, c1, c2, c3);
-    LED(x + 2, y, z, c1, c2, c3);
-    LED(x - 2, y, z, c1, c2, c3);
-    LED(x, y + 2, z, c1, c2, c3);
-    LED(x, y - 2, z, c1, c2, c3);
-    LED(x + 1, y + 1, z, c1, c2, c3);
-    LED(x + 1, y - 1, z, c1, c2, c3);
-    LED(x - 1, y + 1, z, c1, c2, c3);
-    LED(x - 1, y - 1, z, c1, c2, c3);
-    LED(x + 1, y + 1, z + 1, c1, c2, c3);
-    LED(x + 1, y - 1, z + 1, c1, c2, c3);
-    LED(x - 1, y + 1, z + 1, c1, c2, c3);
-    LED(x - 1, y - 1, z + 1, c1, c2, c3);
-    LED(x + 1, y + 1, z - 1, c1, c2, c3);
-    LED(x + 1, y - 1, z - 1, c1, c2, c3);
-    LED(x - 1, y + 1, z - 1, c1, c2, c3);
-    LED(x - 1, y - 1, z - 1, c1, c2, c3);
+      LED(x, y, z, c1, c2, c3);
+      LED(x, y, z - 1, c1, c2, c3);
+      LED(x, y, z + 1, c1, c2, c3);
+      LED(x, y, z - 2, c1, c2, c3);
+      LED(x, y, z + 2, c1, c2, c3);
+      LED(x + 1, y, z, c1, c2, c3);
+      LED(x - 1, y, z, c1, c2, c3);
+      LED(x, y + 1, z, c1, c2, c3);
+      LED(x, y - 1, z, c1, c2, c3);
+      LED(x + 2, y, z, c1, c2, c3);
+      LED(x - 2, y, z, c1, c2, c3);
+      LED(x, y + 2, z, c1, c2, c3);
+      LED(x, y - 2, z, c1, c2, c3);
+      LED(x + 1, y + 1, z, c1, c2, c3);
+      LED(x + 1, y - 1, z, c1, c2, c3);
+      LED(x - 1, y + 1, z, c1, c2, c3);
+      LED(x - 1, y - 1, z, c1, c2, c3);
+      LED(x + 1, y + 1, z + 1, c1, c2, c3);
+      LED(x + 1, y - 1, z + 1, c1, c2, c3);
+      LED(x - 1, y + 1, z + 1, c1, c2, c3);
+      LED(x - 1, y - 1, z + 1, c1, c2, c3);
+      LED(x + 1, y + 1, z - 1, c1, c2, c3);
+      LED(x + 1, y - 1, z - 1, c1, c2, c3);
+      LED(x - 1, y + 1, z - 1, c1, c2, c3);
+      LED(x - 1, y - 1, z - 1, c1, c2, c3);
 
-    LED(x2, y2, z2, c21, c22, c23);
-    LED(x2, y2, z2 - 1, c21, c22, c23);
-    LED(x2, y2, z2 + 1, c21, c22, c23);
-    LED(x2, y2, z2 - 2, c21, c22, c23);
-    LED(x2, y2, z2 + 2, c21, c22, c23);
-    LED(x2 + 1, y2, z2, c21, c22, c23);
-    LED(x2 - 1, y2, z2, c21, c22, c23);
-    LED(x2, y2 + 1, z2, c21, c22, c23);
-    LED(x2, y2 - 1, z2, c21, c22, c23);
-    LED(x2 + 2, y2, z2, c21, c22, c23);
-    LED(x2 - 2, y2, z2, c21, c22, c23);
-    LED(x2, y2 + 2, z2, c21, c22, c23);
-    LED(x2, y2 - 2, z2, c21, c22, c23);
-    LED(x2 + 1, y2 + 1, z2, c21, c22, c23);
-    LED(x2 + 1, y2 - 1, z2, c21, c22, c23);
-    LED(x2 - 1, y2 + 1, z2, c21, c22, c23);
-    LED(x2 - 1, y2 - 1, z2, c21, c22, c23);
-    LED(x2 + 1, y2 + 1, z2 + 1, c21, c22, c23);
-    LED(x2 + 1, y2 - 1, z2 + 1, c21, c22, c23);
-    LED(x2 - 1, y2 + 1, z2 + 1, c21, c22, c23);
-    LED(x2 - 1, y2 - 1, z2 + 1, c21, c22, c23);
-    LED(x2 + 1, y2 + 1, z2 - 1, c21, c22, c23);
-    LED(x2 + 1, y2 - 1, z2 - 1, c21, c22, c23);
-    LED(x2 - 1, y2 + 1, z2 - 1, c21, c22, c23);
-    LED(x2 - 1, y2 - 1, z2 - 1, c21, c22, c23);
+      LED(x2, y2, z2, c21, c22, c23);
+      LED(x2, y2, z2 - 1, c21, c22, c23);
+      LED(x2, y2, z2 + 1, c21, c22, c23);
+      LED(x2, y2, z2 - 2, c21, c22, c23);
+      LED(x2, y2, z2 + 2, c21, c22, c23);
+      LED(x2 + 1, y2, z2, c21, c22, c23);
+      LED(x2 - 1, y2, z2, c21, c22, c23);
+      LED(x2, y2 + 1, z2, c21, c22, c23);
+      LED(x2, y2 - 1, z2, c21, c22, c23);
+      LED(x2 + 2, y2, z2, c21, c22, c23);
+      LED(x2 - 2, y2, z2, c21, c22, c23);
+      LED(x2, y2 + 2, z2, c21, c22, c23);
+      LED(x2, y2 - 2, z2, c21, c22, c23);
+      LED(x2 + 1, y2 + 1, z2, c21, c22, c23);
+      LED(x2 + 1, y2 - 1, z2, c21, c22, c23);
+      LED(x2 - 1, y2 + 1, z2, c21, c22, c23);
+      LED(x2 - 1, y2 - 1, z2, c21, c22, c23);
+      LED(x2 + 1, y2 + 1, z2 + 1, c21, c22, c23);
+      LED(x2 + 1, y2 - 1, z2 + 1, c21, c22, c23);
+      LED(x2 - 1, y2 + 1, z2 + 1, c21, c22, c23);
+      LED(x2 - 1, y2 - 1, z2 + 1, c21, c22, c23);
+      LED(x2 + 1, y2 + 1, z2 - 1, c21, c22, c23);
+      LED(x2 + 1, y2 - 1, z2 - 1, c21, c22, c23);
+      LED(x2 - 1, y2 + 1, z2 - 1, c21, c22, c23);
+      LED(x2 - 1, y2 - 1, z2 - 1, c21, c22, c23);
 
-    x2o = x2;
-    y2o = y2;
-    z2o = z2;
+      x2o = x2;
+      y2o = y2;
+      z2o = z2;
 
-    xo = x;
-    yo = y;
-    zo = z;
+      xo = x;
+      yo = y;
+      zo = z;
 
-    delay(45);
+      delay(45);
 
-    x = x + xmult;
-    y = y + ymult;
-    z = z + zmult;
+      x = x + xmult;
+      y = y + ymult;
+      z = z + zmult;
 
-    x2 = x2 + x2mult;
-    y2 = y2 + y2mult;
-    z2 = z2 + z2mult;
+      x2 = x2 + x2mult;
+      y2 = y2 + y2mult;
+      z2 = z2 + z2mult;
 
-    if (x >= 7) {
-      //x=7;
-      xmult = random(-1, 1);
-    }
-    if (y >= 7) {
-      //y=7;
-      ymult = random(-1, 1);
-    }
-    if (z >= 7) {
-      //z=7;
-      zmult = random(-1, 1);
-    }
-    if (x <= 0) {
-      //x=0;
-      xmult = random(0, 2);
-    }
-    if (y <= 0) {
-      //y=0;
-      ymult = random(0, 2);
-    }
-    if (z <= 0) {
-      //z=0;
-      zmult = random(0, 2);
-    }
-
-    if (x2 >= 7) {
-      //x=7;
-      x2mult = random(-1, 1);
-    }
-    if (y2 >= 7) {
-      //y=7;
-      y2mult = random(-1, 1);
-    }
-    if (z2 >= 7) {
-      //z=7;
-      z2mult = random(-1, 1);
-    }
-    if (x2 <= 0) {
-      //x=0;
-      x2mult = random(0, 2);
-    }
-    if (y2 <= 0) {
-      //y=0;
-      y2mult = random(0, 2);
-    }
-    if (z <= 0) {
-      //z=0;
-      z2mult = random(0, 2);
-    }
-
-  } //counter  counter counter counter counter
-
-  for (counter = 0; counter < 15; counter++) {
-    color_select = random(0, 3);
-    if (color_select == 0) {
-      c1 = 0;
-      c2 = random(0, 16);
-      c3 = random(0, 16);
-    }
-    if (color_select == 1) {
-      c1 = random(0, 16);
-      c2 = 0;
-      c3 = random(0, 16);
-    }
-    if (color_select == 2) {
-      c1 = random(0, 16);
-      c2 = random(0, 16);
-      c3 = 0;
-    }
-
-    int num1 = -1, num2 = -4, num3 = -6, num4 = -10;
-    for (m = 0; m < 20; m++) {
-
-      num1++;
-      num2++;
-      num3++;
-      num4++;
-
-      for (i = 3; i < 5; i++) {
-        LED(num1, i, 3, 0, 0, 0);
-        LED(num1, 3, i, 0, 0, 0);
-        LED(num1, 4, i, 0, 0, 0);
-        LED(num1, i, 4, 0, 0, 0);
+      if (x >= 7) {
+        //x=7;
+        xmult = random(-1, 1);
       }
-      for (i = 3; i < 5; i++) {
-        LED(num1 + 1, i, 4, c1, c2, c3);
-        LED(num1 + 1, 4, i, c1, c2, c3);
-        LED(num1 + 1, 3, i, c1, c2, c3);
-        LED(num1 + 1, i, 3, c1, c2, c3);
+      if (y >= 7) {
+        //y=7;
+        ymult = random(-1, 1);
       }
-      for (i = 2; i < 6; i++) {
-        LED(num2, i, 2, 0, 0, 0);
-        LED(num2, 2, i, 0, 0, 0);
-        LED(num2, 5, i, 0, 0, 0);
-        LED(num2, i, 5, 0, 0, 0);
+      if (z >= 7) {
+        //z=7;
+        zmult = random(-1, 1);
       }
-      for (i = 2; i < 6; i++) {
-        LED(num2 + 1, i, 2, c1, c2, c3);
-        LED(num2 + 1, 2, i, c1, c2, c3);
-        LED(num2 + 1, 5, i, c1, c2, c3);
-        LED(num2 + 1, i, 5, c1, c2, c3);
+      if (x <= 0) {
+        //x=0;
+        xmult = random(0, 2);
       }
-      for (i = 1; i < 7; i++) {
-        LED(num3, i, 1, 0, 0, 0);
-        LED(num3, 1, i, 0, 0, 0);
-        LED(num3, 6, i, 0, 0, 0);
-        LED(num3, i, 6, 0, 0, 0);
+      if (y <= 0) {
+        //y=0;
+        ymult = random(0, 2);
       }
-      for (i = 1; i < 7; i++) {
-        LED(num3 + 1, i, 1, c1, c2, c3);
-        LED(num3 + 1, 1, i, c1, c2, c3);
-        LED(num3 + 1, 6, i, c1, c2, c3);
-        LED(num3 + 1, i, 6, c1, c2, c3);
+      if (z <= 0) {
+        //z=0;
+        zmult = random(0, 2);
       }
-      for (i = 0; i < 8; i++) {
-        LED(num4, i, 0, 0, 0, 0);
-        LED(num4, 0, i, 0, 0, 0);
-        LED(num4, 7, i, 0, 0, 0);
-        LED(num4, i, 7, 0, 0, 0);
-      }
-      for (i = 0; i < 8; i++) {
-        LED(num4 + 1, i, 0, c1, c2, c3);
-        LED(num4 + 1, 0, i, c1, c2, c3);
-        LED(num4 + 1, 7, i, c1, c2, c3);
-        LED(num4 + 1, i, 7, c1, c2, c3);
-      }
-      //delay(1);
-    } //m
 
-    num1 = 8;
-    num2 = 11;
-    num3 = 13;
-    num4 = 17;
+      if (x2 >= 7) {
+        //x=7;
+        x2mult = random(-1, 1);
+      }
+      if (y2 >= 7) {
+        //y=7;
+        y2mult = random(-1, 1);
+      }
+      if (z2 >= 7) {
+        //z=7;
+        z2mult = random(-1, 1);
+      }
+      if (x2 <= 0) {
+        //x=0;
+        x2mult = random(0, 2);
+      }
+      if (y2 <= 0) {
+        //y=0;
+        y2mult = random(0, 2);
+      }
+      if (z <= 0) {
+        //z=0;
+        z2mult = random(0, 2);
+      }
 
-    for (m = 0; m < 20; m++) {
-      num1--;
-      num2--;
-      num3--;
-      num4--;
-      for (i = 3; i < 5; i++) {
-        LED(num1, i, 3, 0, 0, 0);
-        LED(num1, 3, i, 0, 0, 0);
-        LED(num1, 4, i, 0, 0, 0);
-        LED(num1, i, 4, 0, 0, 0);
-      }
-      for (i = 3; i < 5; i++) {
-        LED(num1 - 1, i, 4, 0, 0, 15);
-        LED(num1 - 1, 4, i, 0, 0, 15);
-        LED(num1 - 1, 3, i, 0, 0, 15);
-        LED(num1 - 1, i, 3, 0, 0, 15);
-      }
-      for (i = 2; i < 6; i++) {
-        LED(num2, i, 2, 0, 0, 0);
-        LED(num2, 2, i, 0, 0, 0);
-        LED(num2, 5, i, 0, 0, 0);
-        LED(num2, i, 5, 0, 0, 0);
-      }
-      for (i = 2; i < 6; i++) {
-        LED(num2 - 1, i, 2, 0, 0, 15);
-        LED(num2 - 1, 2, i, 0, 0, 15);
-        LED(num2 - 1, 5, i, 0, 0, 15);
-        LED(num2 - 1, i, 5, 0, 0, 15);
-      }
-      for (i = 1; i < 7; i++) {
-        LED(num3, i, 1, 0, 0, 0);
-        LED(num3, 1, i, 0, 0, 0);
-        LED(num3, 6, i, 0, 0, 0);
-        LED(num3, i, 6, 0, 0, 0);
-      }
-      for (i = 1; i < 7; i++) {
-        LED(num3 - 1, i, 1, 0, 0, 15);
-        LED(num3 - 1, 1, i, 0, 0, 15);
-        LED(num3 - 1, 6, i, 0, 0, 15);
-        LED(num3 - 1, i, 6, 0, 0, 15);
-      }
-      for (i = 0; i < 8; i++) {
-        LED(num4, i, 0, 0, 0, 0);
-        LED(num4, 0, i, 0, 0, 0);
-        LED(num4, 7, i, 0, 0, 0);
-        LED(num4, i, 7, 0, 0, 0);
-      }
-      for (i = 0; i < 8; i++) {
-        LED(num4 - 1, i, 0, 0, 0, 15);
-        LED(num4 - 1, 0, i, 0, 0, 15);
-        LED(num4 - 1, 7, i, 0, 0, 15);
-        LED(num4 - 1, i, 7, 0, 0, 15);
-      }
-      //delay(1);
-    } //m
+    } //counter  counter counter counter counter
 
-  } //counter
+    for (counter = 0; counter < 15; counter++) {
+      color_select = random(0, 3);
+      if (color_select == 0) {
+        c1 = 0;
+        c2 = random(0, 16);
+        c3 = random(0, 16);
+      }
+      if (color_select == 1) {
+        c1 = random(0, 16);
+        c2 = 0;
+        c3 = random(0, 16);
+      }
+      if (color_select == 2) {
+        c1 = random(0, 16);
+        c2 = random(0, 16);
+        c3 = 0;
+      }
+
+      int num1 = -1, num2 = -4, num3 = -6, num4 = -10;
+      for (m = 0; m < 20; m++) {
+
+        num1++;
+        num2++;
+        num3++;
+        num4++;
+
+        for (i = 3; i < 5; i++) {
+          LED(num1, i, 3, 0, 0, 0);
+          LED(num1, 3, i, 0, 0, 0);
+          LED(num1, 4, i, 0, 0, 0);
+          LED(num1, i, 4, 0, 0, 0);
+        }
+        for (i = 3; i < 5; i++) {
+          LED(num1 + 1, i, 4, c1, c2, c3);
+          LED(num1 + 1, 4, i, c1, c2, c3);
+          LED(num1 + 1, 3, i, c1, c2, c3);
+          LED(num1 + 1, i, 3, c1, c2, c3);
+        }
+        for (i = 2; i < 6; i++) {
+          LED(num2, i, 2, 0, 0, 0);
+          LED(num2, 2, i, 0, 0, 0);
+          LED(num2, 5, i, 0, 0, 0);
+          LED(num2, i, 5, 0, 0, 0);
+        }
+        for (i = 2; i < 6; i++) {
+          LED(num2 + 1, i, 2, c1, c2, c3);
+          LED(num2 + 1, 2, i, c1, c2, c3);
+          LED(num2 + 1, 5, i, c1, c2, c3);
+          LED(num2 + 1, i, 5, c1, c2, c3);
+        }
+        for (i = 1; i < 7; i++) {
+          LED(num3, i, 1, 0, 0, 0);
+          LED(num3, 1, i, 0, 0, 0);
+          LED(num3, 6, i, 0, 0, 0);
+          LED(num3, i, 6, 0, 0, 0);
+        }
+        for (i = 1; i < 7; i++) {
+          LED(num3 + 1, i, 1, c1, c2, c3);
+          LED(num3 + 1, 1, i, c1, c2, c3);
+          LED(num3 + 1, 6, i, c1, c2, c3);
+          LED(num3 + 1, i, 6, c1, c2, c3);
+        }
+        for (i = 0; i < 8; i++) {
+          LED(num4, i, 0, 0, 0, 0);
+          LED(num4, 0, i, 0, 0, 0);
+          LED(num4, 7, i, 0, 0, 0);
+          LED(num4, i, 7, 0, 0, 0);
+        }
+        for (i = 0; i < 8; i++) {
+          LED(num4 + 1, i, 0, c1, c2, c3);
+          LED(num4 + 1, 0, i, c1, c2, c3);
+          LED(num4 + 1, 7, i, c1, c2, c3);
+          LED(num4 + 1, i, 7, c1, c2, c3);
+        }
+        //delay(1);
+      } //m
+
+      num1 = 8;
+      num2 = 11;
+      num3 = 13;
+      num4 = 17;
+
+      for (m = 0; m < 20; m++) {
+        num1--;
+        num2--;
+        num3--;
+        num4--;
+        for (i = 3; i < 5; i++) {
+          LED(num1, i, 3, 0, 0, 0);
+          LED(num1, 3, i, 0, 0, 0);
+          LED(num1, 4, i, 0, 0, 0);
+          LED(num1, i, 4, 0, 0, 0);
+        }
+        for (i = 3; i < 5; i++) {
+          LED(num1 - 1, i, 4, 0, 0, 15);
+          LED(num1 - 1, 4, i, 0, 0, 15);
+          LED(num1 - 1, 3, i, 0, 0, 15);
+          LED(num1 - 1, i, 3, 0, 0, 15);
+        }
+        for (i = 2; i < 6; i++) {
+          LED(num2, i, 2, 0, 0, 0);
+          LED(num2, 2, i, 0, 0, 0);
+          LED(num2, 5, i, 0, 0, 0);
+          LED(num2, i, 5, 0, 0, 0);
+        }
+        for (i = 2; i < 6; i++) {
+          LED(num2 - 1, i, 2, 0, 0, 15);
+          LED(num2 - 1, 2, i, 0, 0, 15);
+          LED(num2 - 1, 5, i, 0, 0, 15);
+          LED(num2 - 1, i, 5, 0, 0, 15);
+        }
+        for (i = 1; i < 7; i++) {
+          LED(num3, i, 1, 0, 0, 0);
+          LED(num3, 1, i, 0, 0, 0);
+          LED(num3, 6, i, 0, 0, 0);
+          LED(num3, i, 6, 0, 0, 0);
+        }
+        for (i = 1; i < 7; i++) {
+          LED(num3 - 1, i, 1, 0, 0, 15);
+          LED(num3 - 1, 1, i, 0, 0, 15);
+          LED(num3 - 1, 6, i, 0, 0, 15);
+          LED(num3 - 1, i, 6, 0, 0, 15);
+        }
+        for (i = 0; i < 8; i++) {
+          LED(num4, i, 0, 0, 0, 0);
+          LED(num4, 0, i, 0, 0, 0);
+          LED(num4, 7, i, 0, 0, 0);
+          LED(num4, i, 7, 0, 0, 0);
+        }
+        for (i = 0; i < 8; i++) {
+          LED(num4 - 1, i, 0, 0, 0, 15);
+          LED(num4 - 1, 0, i, 0, 0, 15);
+          LED(num4 - 1, 7, i, 0, 0, 15);
+          LED(num4 - 1, i, 7, 0, 0, 15);
+        }
+        //delay(1);
+      } //m
+    } //counter
+  }
+  
 
 } //harlem SHake
 
@@ -1817,10 +1825,12 @@ void setup() {
   timerAlarmEnable(My_timer);
 }
 
-void handleAnimation (bool on, String selected) {
-  if (on == true) {
+void handleAnimation (bool on, int selected) {
+  if (on) {
+    Serial.println("masuk on true");
     switch (selected) {
     case 1:
+    Serial.println("masuk case 1");
       rainVersionTwo();
       break;
     case 2:
@@ -1841,19 +1851,22 @@ void handleAnimation (bool on, String selected) {
     
     default:
       clean();
+      Serial.println("buang default");
       break;
     }
 
   } else {
     clean();
+    Serial.print(".");
   }
 }
 
 void loop() {
 
-  handleAnimation(on, selected);
+  
   if (Firebase.ready()) {
 
   }
-  
+  handleAnimation(on, selected);
+  // Serial.println("masuk case 1");
 }
