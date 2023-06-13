@@ -202,6 +202,7 @@ void IRAM_ATTR onTimer(){
 
   digitalWrite(latch_pin, HIGH);
   digitalWrite(latch_pin,LOW);
+  digitalWrite(blank_pin, LOW);
 
   anodelevel++;
   level = level + 8;
@@ -213,7 +214,6 @@ void IRAM_ATTR onTimer(){
     level = 0;
   }
 
-  digitalWrite(blank_pin, LOW);
 }
 
 
@@ -1759,7 +1759,7 @@ void setup() {
   noInterrupts();
   SPI.setBitOrder(MSBFIRST);
   SPI.setDataMode(SPI_MODE0);
-  SPI.setFrequency(8000000);
+  SPI.setFrequency(16000000);
 
   anode[7]=B00000001;
   anode[6]=B00000010;
@@ -1825,10 +1825,10 @@ void setup() {
   Firebase.setMultiPathStreamCallback(stream, streamCallback, streamTimeoutCallback);
   // WIFI AND FIREBASE
 
-
+  // int timerScale = 800;
   //SETTINGS//
   // Bright : 800 - 100 : Flicker-free
-  My_timer = timerBegin(0, 800, true);
+  My_timer = timerBegin(0, 100, true);
   timerAttachInterrupt(My_timer, &onTimer, true);
   timerAlarmWrite(My_timer, 175, true); // DO NOT CHANGE
   timerAlarmEnable(My_timer);
