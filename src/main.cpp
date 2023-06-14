@@ -335,7 +335,6 @@ void rainVersionTwo() {//****rainVersionTwo****rainVersionTwo****rainVersionTwo*
  
 }//rainv2
 
-
 void folder() { //****folder****folder****folder****folder****folder****folder****folder****folder****folder
   int xx, yy, zz, pullback[16], state = 0, backorfront = 7; //backorfront 7 for back 0 for front
 
@@ -925,6 +924,7 @@ void bouncyvTwo() { //****bouncyTwo****bouncyTwo****bouncyTwo****bouncyTwo****bo
   } //while
 
 } //bouncyv2
+
 void sinwaveTwo() { //*****sinewaveTwo*****sinewaveTwo*****sinewaveTwo*****sinewaveTwo*****sinewaveTwo*****sinewaveTwo
   int sinewavearray[8], addr, sinemult[8], colselect, rr = 0, gg = 0, bb = 15, addrt;
   int sinewavearrayOLD[8], select, subZ = -7, subT = 7, multi = 0; //random(-1, 2);
