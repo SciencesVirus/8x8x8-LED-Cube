@@ -112,6 +112,118 @@ unsigned long start;
 
 hw_timer_t *My_timer = NULL;
 
+void LEDPushRed(int level, int row, int column, byte red, int whichbyte, int wholebyte) {
+  bitWrite(red0[whichbyte], wholebyte-(8*whichbyte), bitRead(red, 0));
+  bitWrite(red1[whichbyte], wholebyte-(8*whichbyte), bitRead(red, 1));
+  bitWrite(red2[whichbyte], wholebyte-(8*whichbyte), bitRead(red, 2)); 
+  bitWrite(red3[whichbyte], wholebyte-(8*whichbyte), bitRead(red, 3)); 
+};
+
+void LEDPushGreen(int level, int row, int column, byte green, int whichbyte, int wholebyte) {
+  bitWrite(green0[whichbyte], wholebyte-(8*whichbyte), bitRead(green, 0));
+  bitWrite(green1[whichbyte], wholebyte-(8*whichbyte), bitRead(green, 1));
+  bitWrite(green2[whichbyte], wholebyte-(8*whichbyte), bitRead(green, 2)); 
+  bitWrite(green3[whichbyte], wholebyte-(8*whichbyte), bitRead(green, 3));
+};
+
+void LEDPushBlue(int level, int row, int column, byte blue, int whichbyte, int wholebyte) {
+  bitWrite(blue0[whichbyte], wholebyte-(8*whichbyte), bitRead(blue, 0));
+  bitWrite(blue1[whichbyte], wholebyte-(8*whichbyte), bitRead(blue, 1));
+  bitWrite(blue2[whichbyte], wholebyte-(8*whichbyte), bitRead(blue, 2)); 
+  bitWrite(blue3[whichbyte], wholebyte-(8*whichbyte), bitRead(blue, 3));
+};
+
+void LEDWrapper(int level, int row, int column, byte red, byte green, byte blue, int whichbyte, int wholebyte) {
+  //fix blue shifting
+  if (blue > 0) {
+    if (row < 4) {
+      if (row == 3 && column == 0) {
+        LEDPushBlue(level, 4, 7, blue, whichbyte, wholebyte);
+      } else if (row == 2 && column == 0) {
+        LEDPushBlue(level, 3, 7, blue, whichbyte, wholebyte);
+      } else if (row == 1 && column == 0) {
+        LEDPushBlue(level, 2, 7, blue, whichbyte, wholebyte);
+      } else if (row == 0 && column == 0) {
+        LEDPushBlue(level, 1, 7, blue, whichbyte, wholebyte);
+      } else {
+        int colshift = (column + 7) % 8;
+        LEDPushBlue(level, row, colshift, blue, whichbyte, wholebyte);
+      }
+    } else {
+      if (row == 4 && column == 7) {
+      LEDPushBlue(level, 3, 6, blue, whichbyte, wholebyte); // unsavable
+      } else {
+        int colshift = (column + 8) % 8;
+        LEDPushBlue(level, row, colshift, blue, whichbyte, wholebyte);
+      }
+    }
+  }
+  //fix green shifting
+  if (green > 0) {
+    if (row < 4) {
+      if (row == 3 && column == 0) {
+        LEDPushGreen(level, 4, 6, green, whichbyte, wholebyte);
+      } else if (row == 2 && column == 0) {
+        LEDPushGreen(level, 3, 6, green, whichbyte, wholebyte);
+      } else if (row == 1 && column == 0) {
+        LEDPushGreen(level, 2, 6, green, whichbyte, wholebyte);
+      } else if (row == 0 && column == 0) {
+        LEDPushGreen(level, 1, 6, green, whichbyte, wholebyte);
+      } else if(row == 7 && column == 1) {
+        LEDPushGreen(level, 0, 5, green, whichbyte, wholebyte);
+      } else if(row == 0 && column == 7) {
+        
+      } else {
+        int colshift = (column + 6) % 8;
+        LEDPushGreen(level, row, colshift, green, whichbyte, wholebyte);
+      }
+
+    } else {
+      int colshift = (column + 7) % 8;
+      LEDPushGreen(level, row, colshift, green, whichbyte, wholebyte);
+    }
+  }
+  //fix red shifting
+  if(red > 0) {
+    if(row == 7 && column == 0) {
+      LEDPushRed(level, 0, 6, green, whichbyte, wholebyte);
+    }else if(row == 7 && column == 1) {
+      LEDPushRed(level, 0, 7, green, whichbyte, wholebyte);
+    } else if(row == 6 && column == 0) {
+      LEDPushRed(level, 7, 6, red, whichbyte, wholebyte);
+    } else if(row == 5 && column == 0) {
+      LEDPushRed(level, 6, 6, red, whichbyte, wholebyte);
+  } else if(row == 4 && column == 0) {
+      LEDPushRed(level, 5, 6, red, whichbyte, wholebyte);
+    } else if(row == 3 && column == 0) {
+      LEDPushRed(level, 4, 6, red, whichbyte, wholebyte);
+    } else if(row == 2 && column == 0) {
+      LEDPushRed(level, 3, 6, red, whichbyte, wholebyte);
+    } else if(row == 1 && column == 0) {
+      LEDPushRed(level, 2, 6, red, whichbyte, wholebyte);
+    } else if(row == 0 && column == 0) {
+      LEDPushRed(level, 1, 6, red, whichbyte, wholebyte);
+    } else if(row == 6 && column == 1) {
+      LEDPushRed(level, 7, 7, red, whichbyte, wholebyte);
+    } else if(row == 5 && column == 1) {
+      LEDPushRed(level, 6, 7, red, whichbyte, wholebyte);
+    } else if(row == 4 && column == 1) {
+      LEDPushRed(level, 5, 7, red, whichbyte, wholebyte);
+    } else if(row == 3 && column == 1) {
+      LEDPushRed(level, 4, 7, red, whichbyte, wholebyte);
+    } else if(row == 2 && column == 1) {
+      LEDPushRed(level, 3, 7, red, whichbyte, wholebyte);
+    } else if(row == 1 && column == 1) {
+      LEDPushRed(level, 2, 7, red, whichbyte, wholebyte);
+    } else if(row == 0 && column == 1) {
+      LEDPushRed(level, 1, 7, red, whichbyte, wholebyte);
+    } else {
+      int colshift = (column + 6) % 8;
+      LEDPushRed(level, row, colshift, red, whichbyte, wholebyte);
+    }
+  }
+}
+
 void LED(int level, int row, int column, byte red, byte green, byte blue){
 
   level = constrain(level, 0, 7);
@@ -122,23 +234,19 @@ void LED(int level, int row, int column, byte red, byte green, byte blue){
   blue = constrain(blue, 0, 15);
 
   int whichbyte = int(((level*64)+(row*8)+column)/8);
-
   int wholebyte = (level*64)+(row*8)+column;
 
-  bitWrite(red0[whichbyte], wholebyte-(8*whichbyte), bitRead(red, 0));
-  bitWrite(red1[whichbyte], wholebyte-(8*whichbyte), bitRead(red, 1));
-  bitWrite(red2[whichbyte], wholebyte-(8*whichbyte), bitRead(red, 2)); 
-  bitWrite(red3[whichbyte], wholebyte-(8*whichbyte), bitRead(red, 3)); 
-
-  bitWrite(green0[whichbyte], wholebyte-(8*whichbyte), bitRead(green, 0));
-  bitWrite(green1[whichbyte], wholebyte-(8*whichbyte), bitRead(green, 1));
-  bitWrite(green2[whichbyte], wholebyte-(8*whichbyte), bitRead(green, 2)); 
-  bitWrite(green3[whichbyte], wholebyte-(8*whichbyte), bitRead(green, 3));
-
-  bitWrite(blue0[whichbyte], wholebyte-(8*whichbyte), bitRead(blue, 0));
-  bitWrite(blue1[whichbyte], wholebyte-(8*whichbyte), bitRead(blue, 1));
-  bitWrite(blue2[whichbyte], wholebyte-(8*whichbyte), bitRead(blue, 2)); 
-  bitWrite(blue3[whichbyte], wholebyte-(8*whichbyte), bitRead(blue, 3));
+  for (int i = 0; i < 3; i++) {
+    if (i == 0) {
+      LEDWrapper(level, row, column, red, 0, 0, whichbyte, wholebyte);
+    } else if (i == 1) {
+      LEDWrapper(level, row, column, 0, green, 0, whichbyte, wholebyte);
+    } else if (i == 2) {
+      LEDWrapper(level, row, column, 0, 0, blue, whichbyte, wholebyte);
+    } else {
+      Serial.println("Push to wrapper error");
+    }
+  }
 }
 
 void IRAM_ATTR onTimer(){
@@ -146,15 +254,15 @@ void IRAM_ATTR onTimer(){
   digitalWrite(blank_pin, HIGH);
 
   if (BAM_Counter == 8){
-  BAM_Bit++;
+    BAM_Bit++;
   }
 
   else if (BAM_Counter == 24){
-  BAM_Bit++;
+    BAM_Bit++;
   }
 
   else if (BAM_Counter == 56){
-  BAM_Bit++;
+    BAM_Bit++;
   }
 
   BAM_Counter++;
@@ -162,39 +270,39 @@ void IRAM_ATTR onTimer(){
   switch (BAM_Bit){
     case 0:
         for(shift_out=level; shift_out<level+8; shift_out++)
-        SPI.transfer(red0[shift_out]);
+          SPI.transfer(red0[shift_out]);
         for(shift_out=level; shift_out<level+8; shift_out++)
-        SPI.transfer(green0[shift_out]); 
+          SPI.transfer(green0[shift_out]); 
         for(shift_out=level; shift_out<level+8; shift_out++)
-        SPI.transfer(blue0[shift_out]);
+          SPI.transfer(blue0[shift_out]);
         break;
     case 1:
         for(shift_out=level; shift_out<level+8; shift_out++)
-        SPI.transfer(red1[shift_out]);
+          SPI.transfer(red1[shift_out]);
         for(shift_out=level; shift_out<level+8; shift_out++)
-        SPI.transfer(green1[shift_out]); 
+          SPI.transfer(green1[shift_out]); 
         for(shift_out=level; shift_out<level+8; shift_out++)
-        SPI.transfer(blue1[shift_out]);
+          SPI.transfer(blue1[shift_out]);
         break;
     case 2:
         for(shift_out=level; shift_out<level+8; shift_out++)
-        SPI.transfer(red2[shift_out]);
+          SPI.transfer(red2[shift_out]);
         for(shift_out=level; shift_out<level+8; shift_out++)
-        SPI.transfer(green2[shift_out]); 
+          SPI.transfer(green2[shift_out]); 
         for(shift_out=level; shift_out<level+8; shift_out++)
-        SPI.transfer(blue2[shift_out]);
+          SPI.transfer(blue2[shift_out]);
         break;
     case 3:
         for(shift_out=level; shift_out<level+8; shift_out++)
-        SPI.transfer(red3[shift_out]);
+          SPI.transfer(red3[shift_out]);
         for(shift_out=level; shift_out<level+8; shift_out++)
-        SPI.transfer(green3[shift_out]); 
+          SPI.transfer(green3[shift_out]); 
         for(shift_out=level; shift_out<level+8; shift_out++)
-        SPI.transfer(blue3[shift_out]);
+          SPI.transfer(blue3[shift_out]);
 
-        if (BAM_Counter == 120){
-            BAM_Counter = 0;
-            BAM_Bit = 0;
+        if (BAM_Counter == 120) {
+          BAM_Counter = 0;
+          BAM_Bit = 0;
         }
         break;
   }
@@ -207,13 +315,12 @@ void IRAM_ATTR onTimer(){
   anodelevel++;
   level = level + 8;
 
-  if (anodelevel == 8){
+  if (anodelevel == 8) {
     anodelevel = 0;
   }
-  if (level == 64){
+  if (level == 64) {
     level = 0;
   }
-
 }
 
 
