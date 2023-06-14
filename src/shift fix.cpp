@@ -18,33 +18,34 @@ FirebaseAuth auth;
 FirebaseConfig config;
 
 String parentPath = "/ledState";
-String childPath[2] = {"/on", "/selected"};
+String childPath[3] = {"/on", "/selected", "/frame_cenah"};
+
+String framePath = "/testing_frame/frame_cenah/array";
+String flagPath = "/ledState/frame_cenah";
 
 bool on = false;
 int selected = 0;
+bool frameUpdate = false;
 
 //--------- FIREBASE CALLBACKS ---------//
 
 
-void streamCallback(MultiPathStreamData stream) {
-  // int numChild = 2;
+void streamCallback(MultiPathStream stream) {
   size_t numChild = sizeof(childPath) / sizeof(childPath[0]);
-  Serial.println("masok");
+  Serial.println("\nStreamCallback");
 
   for (size_t i = 0; i < numChild; i++) {
-    Serial.println("masok loop");
+    Serial.println("StreamCallback Loop");
     Serial.println(childPath[i]);
     if (stream.get(childPath[i])) {
       Serial.printf("path: %s, event: %s, type: %s, value: %s%s", stream.dataPath.c_str(), stream.eventType.c_str(), stream.type.c_str(), stream.value.c_str(), i < numChild - 1 ? "\n" : "");
-      Serial.println("masok if");
 
       const char* childPath = stream.dataPath.c_str();
-      String value = stream.value.c_str();
-
+      
       // Perform different actions based on the child path
       if (strcmp(childPath, "/on") == 0) {
-        Serial.println("masok if 1");
-        Serial.println(value);
+        String value = stream.value.c_str();
+        Serial.println("Change in path 1");
         if (value == "true") {
           digitalWrite(BUILTIN_LED, HIGH);
           on = true;
@@ -52,9 +53,11 @@ void streamCallback(MultiPathStreamData stream) {
           digitalWrite(BUILTIN_LED, LOW);
           on = false;
         }
+        Serial.print("On Value: ");
+        Serial.println(on);
       } else if (strcmp(childPath, "/selected") == 0) {
-        Serial.println("masok if 2");
-
+        String value = stream.value.c_str();
+        Serial.println("Change in path 2");
         if (value == "Rain Wave") {
           selected = 1;
         } else if (value == "Folder") {
@@ -68,11 +71,21 @@ void streamCallback(MultiPathStreamData stream) {
         } else if (value == "Harlem Shake") {
           selected = 6;
         } 
-
+        Serial.print("Selected Value: ");
         Serial.println(selected);
+      } else if (strcmp(childPath, "/frame_cenah") == 0) {
+        Serial.println("Change in frame to display");
+        String value = stream.value.c_str();
+        if (value == "true") {
+          frameUpdate = true;
+        } else {
+          frameUpdate = false;
+        }
+        Serial.print("frameUpdate Value: ");
+        Serial.println(frameUpdate);
       }
     } else {
-      Serial.println("error cok");
+      Serial.println("StreamCallback Error");
     }
   }
 
@@ -89,7 +102,7 @@ void streamTimeoutCallback(bool timeout) {
 }
 
 
-//--------- FIREBASE CALLBACKS ---------//
+//--------- FIREBASE CALLBACKS END ---------//
 
 #define latch_pin 4
 #define blank_pin 22
@@ -1919,10 +1932,10 @@ void setup() {
 
   Firebase.reconnectWiFi(true);
 
-  if (!Firebase.beginMultiPathStream(stream, parentPath))
+  if (!Firebase.RTDB.beginMultiPathStream(&stream, parentPath))
     Serial.printf("stream begin error, %s\n\n", stream.errorReason().c_str());
 
-  Firebase.setMultiPathStreamCallback(stream, streamCallback, streamTimeoutCallback);
+  Firebase.RTDB.setMultiPathStreamCallback(&stream, streamCallback, streamTimeoutCallback);
   // WIFI AND FIREBASE
 
   // int timerScale = 800;
@@ -1936,33 +1949,48 @@ void setup() {
 
 void handleAnimation (bool on, int selected) {
   if (on) {
-    Serial.println("ANIMATIONS ON");
-    switch (selected) {
-    case 1:
-      rainVersionTwo();
-      break;
-    case 2:
-      folder();
-      break;
-    case 3:
-      sinwaveTwo();
-      break;
-    case 4:
-      bouncyvTwo();
-      break;
-    case 5:
-      color_wheelTWO();
-      break;
-    case 6:
-      harlem_shake();
-      break;
-    
-    default:
-      clean();
-      Serial.println("exception");
-      break;
-    }
+    if (frameUpdate) {
 
+      if (Firebase.RTDB.get(&fbdo, framePath)) {
+
+        FirebaseJsonArray frame = fbdo.to<FirebaseJsonArray>();
+        frame.toString(Serial, true);
+
+      } else {
+        Serial.println(fbdo.errorReason());
+      }
+      Serial.println("pulled new frame data");
+      Serial.println(fbdo.dataType());
+      frameUpdate = false;
+      Firebase.RTDB.setBoolAsync(&fbdo, flagPath, false);
+    } else {
+      Serial.println("ANIMATIONS ON");
+      switch (selected) {
+      case 1:
+        rainVersionTwo();
+        break;
+      case 2:
+        folder();
+        break;
+      case 3:
+        sinwaveTwo();
+        break;
+      case 4:
+        bouncyvTwo();
+        break;
+      case 5:
+        color_wheelTWO();
+        break;
+      case 6:
+        harlem_shake();
+        break;
+      
+      default:
+        clean();
+        Serial.println("exception");
+        break;
+      }
+    }
   } else {
     clean();
     Serial.print(".");
