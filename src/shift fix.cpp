@@ -20,8 +20,9 @@ FirebaseConfig config;
 String parentPath = "/ledState";
 String childPath[3] = {"/on", "/selected", "/frame_cenah"};
 
-String framePath = "/testing_frame/frame_cenah/array";
+String framePath = "/testing_frame/frame_cenah";
 String flagPath = "/ledState/frame_cenah";
+String mask = "";
 
 bool on = false;
 int selected = 0;
@@ -70,7 +71,9 @@ void streamCallback(MultiPathStream stream) {
           selected = 5;
         } else if (value == "Harlem Shake") {
           selected = 6;
-        } 
+        } else {
+          selected = 0;
+        }
         Serial.print("Selected Value: ");
         Serial.println(selected);
       } else if (strcmp(childPath, "/frame_cenah") == 0) {
@@ -1951,15 +1954,12 @@ void handleAnimation (bool on, int selected) {
   if (on) {
     if (frameUpdate) {
 
-      if (Firebase.RTDB.get(&fbdo, framePath)) {
-
-        FirebaseJsonArray frame = fbdo.to<FirebaseJsonArray>();
-        frame.toString(Serial, true);
-
+      if (Firebase.Firestore.getDocument(&fbdo, FIREBASE_PROJECT_ID, "", framePath.c_str(), mask.c_str())) {
+        Serial.printf("ok\n%s\n\n", fbdo.payload().c_str());
       } else {
         Serial.println(fbdo.errorReason());
       }
-      Serial.println("pulled new frame data");
+
       Serial.println(fbdo.dataType());
       frameUpdate = false;
       Firebase.RTDB.setBoolAsync(&fbdo, flagPath, false);
