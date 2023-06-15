@@ -25,68 +25,68 @@ int selected = 0;
 
 //--------- FIREBASE CALLBACKS ---------//
 
-void streamCallback(MultiPathStream stream) {
-  size_t numChild = sizeof(childPath) / sizeof(childPath[0]);
-  Serial.println("\nStreamCallback");
+// void streamCallback(MultiPathStream stream) {
+//   size_t numChild = sizeof(childPath) / sizeof(childPath[0]);
+//   Serial.println("\nStreamCallback");
 
-  for (size_t i = 0; i < numChild; i++) {
-    Serial.println("StreamCallback Loop");
-    Serial.println(childPath[i]);
-    if (stream.get(childPath[i])) {
-      Serial.printf("path: %s, event: %s, type: %s, value: %s%s", stream.dataPath.c_str(), stream.eventType.c_str(), stream.type.c_str(), stream.value.c_str(), i < numChild - 1 ? "\n" : "");
+//   for (size_t i = 0; i < numChild; i++) {
+//     Serial.println("StreamCallback Loop");
+//     Serial.println(childPath[i]);
+//     if (stream.get(childPath[i])) {
+//       Serial.printf("path: %s, event: %s, type: %s, value: %s%s", stream.dataPath.c_str(), stream.eventType.c_str(), stream.type.c_str(), stream.value.c_str(), i < numChild - 1 ? "\n" : "");
 
-      const char* childPath = stream.dataPath.c_str();
+//       const char* childPath = stream.dataPath.c_str();
       
-      // Perform different actions based on the child path
-      if (strcmp(childPath, "/on") == 0) {
-        String value = stream.value.c_str();
-        Serial.println("Change in path 1");
-        if (value == "true") {
-          digitalWrite(BUILTIN_LED, HIGH);
-          on = true;
-        } else {
-          digitalWrite(BUILTIN_LED, LOW);
-          on = false;
-        }
-        Serial.print("On Value: ");
-        Serial.println(on);
-      } else if (strcmp(childPath, "/selected") == 0) {
-        String value = stream.value.c_str();
-        Serial.println("Change in path 2");
-        if (value == "Rain Wave") {
-          selected = 1;
-        } else if (value == "Folder") {
-          selected = 2;
-        } else if (value == "Sinewave") {
-          selected = 3;
-        } else if (value == "Bouncy") {
-          selected = 4;
-        } else if (value == "Color Wheel") {
-          selected = 5;
-        } else if (value == "Harlem Shake") {
-          selected = 6;
-        } else {
-          selected = 0;
-        }
-        Serial.print("Selected Value: ");
-        Serial.println(selected);
-      }
-    } else {
-      Serial.println("StreamCallback Error");
-    }
-  }
+//       // Perform different actions based on the child path
+//       if (strcmp(childPath, "/on") == 0) {
+//         String value = stream.value.c_str();
+//         Serial.println("Change in path 1");
+//         if (value == "true") {
+//           digitalWrite(BUILTIN_LED, HIGH);
+//           on = true;
+//         } else {
+//           digitalWrite(BUILTIN_LED, LOW);
+//           on = false;
+//         }
+//         Serial.print("On Value: ");
+//         Serial.println(on);
+//       } else if (strcmp(childPath, "/selected") == 0) {
+//         String value = stream.value.c_str();
+//         Serial.println("Change in path 2");
+//         if (value == "Rain Wave") {
+//           selected = 1;
+//         } else if (value == "Folder") {
+//           selected = 2;
+//         } else if (value == "Sinewave") {
+//           selected = 3;
+//         } else if (value == "Bouncy") {
+//           selected = 4;
+//         } else if (value == "Color Wheel") {
+//           selected = 5;
+//         } else if (value == "Harlem Shake") {
+//           selected = 6;
+//         } else {
+//           selected = 0;
+//         }
+//         Serial.print("Selected Value: ");
+//         Serial.println(selected);
+//       }
+//     } else {
+//       Serial.println("StreamCallback Error");
+//     }
+//   }
 
-  Serial.println();
-  Serial.printf("Received stream payload size: %d (Max. %d)\n\n", stream.payloadLength(), stream.maxPayloadLength());
-}
+//   Serial.println();
+//   Serial.printf("Received stream payload size: %d (Max. %d)\n\n", stream.payloadLength(), stream.maxPayloadLength());
+// }
 
-void streamTimeoutCallback(bool timeout) {
-  if (timeout)
-    Serial.println("stream timed out, resuming...\n");
+// void streamTimeoutCallback(bool timeout) {
+//   if (timeout)
+//     Serial.println("stream timed out, resuming...\n");
 
-  if (!stream.httpConnected())
-    Serial.printf("error code: %d, reason: %s\n\n", stream.httpCode(), stream.errorReason().c_str());
-}
+//   if (!stream.httpConnected())
+//     Serial.printf("error code: %d, reason: %s\n\n", stream.httpCode(), stream.errorReason().c_str());
+// }
 
 //--------- FIREBASE CALLBACKS ---------//
 
@@ -1780,47 +1780,47 @@ void setup() {
   interrupts();
 
 
-  // WIFI AND FIREBASE
-  WiFi.begin(WIFI_SSID, WIFI_PASSWORD);
-  Serial.print("Connecting to Wi-Fi");
-  while (WiFi.status() != WL_CONNECTED) {
-    Serial.print(".");
-    delay(300);
-  }
-  Serial.println();
-  Serial.print("Connected with IP: ");
-  Serial.println(WiFi.localIP());
-  Serial.println();
+  // // WIFI AND FIREBASE
+  // WiFi.begin(WIFI_SSID, WIFI_PASSWORD);
+  // Serial.print("Connecting to Wi-Fi");
+  // while (WiFi.status() != WL_CONNECTED) {
+  //   Serial.print(".");
+  //   delay(300);
+  // }
+  // Serial.println();
+  // Serial.print("Connected with IP: ");
+  // Serial.println(WiFi.localIP());
+  // Serial.println();
 
-  Serial.printf("Firebase Client v%s\n\n", FIREBASE_CLIENT_VERSION);
+  // Serial.printf("Firebase Client v%s\n\n", FIREBASE_CLIENT_VERSION);
 
-  /* Assign the api key (required) */
-  config.api_key = API_KEY;
+  // /* Assign the api key (required) */
+  // config.api_key = API_KEY;
 
-  /* Assign the user sign in credentials */
-  auth.user.email = USER_EMAIL;
-  auth.user.password = USER_PASSWORD;
+  // /* Assign the user sign in credentials */
+  // auth.user.email = USER_EMAIL;
+  // auth.user.password = USER_PASSWORD;
 
-  /* Assign the RTDB URL (required) */
-  config.database_url = DATABASE_URL;
+  // /* Assign the RTDB URL (required) */
+  // config.database_url = DATABASE_URL;
 
-  /* Assign the callback function for the long running token generation task */
-  config.token_status_callback = tokenStatusCallback; // see addons/TokenHelper.h
+  // /* Assign the callback function for the long running token generation task */
+  // config.token_status_callback = tokenStatusCallback; // see addons/TokenHelper.h
 
-  Firebase.begin(&config, &auth);
+  // Firebase.begin(&config, &auth);
 
-  Firebase.reconnectWiFi(true);
+  // Firebase.reconnectWiFi(true);
 
-  if (!Firebase.RTDB.beginMultiPathStream(&stream, parentPath))
-    Serial.printf("stream begin error, %s\n\n", stream.errorReason().c_str());
+  // if (!Firebase.RTDB.beginMultiPathStream(&stream, parentPath))
+  //   Serial.printf("stream begin error, %s\n\n", stream.errorReason().c_str());
 
-  Firebase.RTDB.setMultiPathStreamCallback(&stream, streamCallback, streamTimeoutCallback);
-  // WIFI AND FIREBASE
+  // Firebase.RTDB.setMultiPathStreamCallback(&stream, streamCallback, streamTimeoutCallback);
+  // // WIFI AND FIREBASE
 
   // int timerScale = 800;
   //SETTINGS//
   // Bright : 800 - 100 : Flicker-free
-  My_timer = timerBegin(0, 100, true);
+  My_timer = timerBegin(0, 800, true);
   timerAttachInterrupt(My_timer, &onTimer, true);
   timerAlarmWrite(My_timer, 175, true); // DO NOT CHANGE
   timerAlarmEnable(My_timer);
@@ -1863,7 +1863,14 @@ void handleAnimation (bool on, int selected) {
 
 void loop() {
 
-  if (Firebase.ready()) {}
-  handleAnimation(on, selected);
+  // if (Firebase.ready()) {}
+  // handleAnimation(on, selected);
+
+  rainVersionTwo();
+  folder();
+  sinwaveTwo();
+  bouncyvTwo();
+  color_wheelTWO();
+  harlem_shake();
 
 }
