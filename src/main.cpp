@@ -25,68 +25,68 @@ int selected = 0;
 
 //--------- FIREBASE CALLBACKS ---------//
 
-// void streamCallback(MultiPathStream stream) {
-//   size_t numChild = sizeof(childPath) / sizeof(childPath[0]);
-//   Serial.println("\nStreamCallback");
+void streamCallback(MultiPathStream stream) {
+  size_t numChild = sizeof(childPath) / sizeof(childPath[0]);
+  Serial.println("\nStreamCallback");
 
-//   for (size_t i = 0; i < numChild; i++) {
-//     Serial.println("StreamCallback Loop");
-//     Serial.println(childPath[i]);
-//     if (stream.get(childPath[i])) {
-//       Serial.printf("path: %s, event: %s, type: %s, value: %s%s", stream.dataPath.c_str(), stream.eventType.c_str(), stream.type.c_str(), stream.value.c_str(), i < numChild - 1 ? "\n" : "");
+  for (size_t i = 0; i < numChild; i++) {
+    Serial.println("StreamCallback Loop");
+    Serial.println(childPath[i]);
+    if (stream.get(childPath[i])) {
+      Serial.printf("path: %s, event: %s, type: %s, value: %s%s", stream.dataPath.c_str(), stream.eventType.c_str(), stream.type.c_str(), stream.value.c_str(), i < numChild - 1 ? "\n" : "");
 
-//       const char* childPath = stream.dataPath.c_str();
+      const char* childPath = stream.dataPath.c_str();
       
-//       // Perform different actions based on the child path
-//       if (strcmp(childPath, "/on") == 0) {
-//         String value = stream.value.c_str();
-//         Serial.println("Change in path 1");
-//         if (value == "true") {
-//           digitalWrite(BUILTIN_LED, HIGH);
-//           on = true;
-//         } else {
-//           digitalWrite(BUILTIN_LED, LOW);
-//           on = false;
-//         }
-//         Serial.print("On Value: ");
-//         Serial.println(on);
-//       } else if (strcmp(childPath, "/selected") == 0) {
-//         String value = stream.value.c_str();
-//         Serial.println("Change in path 2");
-//         if (value == "Rain Wave") {
-//           selected = 1;
-//         } else if (value == "Folder") {
-//           selected = 2;
-//         } else if (value == "Sinewave") {
-//           selected = 3;
-//         } else if (value == "Bouncy") {
-//           selected = 4;
-//         } else if (value == "Color Wheel") {
-//           selected = 5;
-//         } else if (value == "Harlem Shake") {
-//           selected = 6;
-//         } else {
-//           selected = 0;
-//         }
-//         Serial.print("Selected Value: ");
-//         Serial.println(selected);
-//       }
-//     } else {
-//       Serial.println("StreamCallback Error");
-//     }
-//   }
+      // Perform different actions based on the child path
+      if (strcmp(childPath, "/on") == 0) {
+        String value = stream.value.c_str();
+        Serial.println("Change in path 1");
+        if (value == "true") {
+          digitalWrite(BUILTIN_LED, HIGH);
+          on = true;
+        } else {
+          digitalWrite(BUILTIN_LED, LOW);
+          on = false;
+        }
+        Serial.print("On Value: ");
+        Serial.println(on);
+      } else if (strcmp(childPath, "/selected") == 0) {
+        String value = stream.value.c_str();
+        Serial.println("Change in path 2");
+        if (value == "Rain Wave") {
+          selected = 1;
+        } else if (value == "Folder") {
+          selected = 2;
+        } else if (value == "Sinewave") {
+          selected = 3;
+        } else if (value == "Bouncy") {
+          selected = 4;
+        } else if (value == "Color Wheel") {
+          selected = 5;
+        } else if (value == "Harlem Shake") {
+          selected = 6;
+        } else {
+          selected = 0;
+        }
+        Serial.print("Selected Value: ");
+        Serial.println(selected);
+      }
+    } else {
+      Serial.println("StreamCallback Error");
+    }
+  }
 
-//   Serial.println();
-//   Serial.printf("Received stream payload size: %d (Max. %d)\n\n", stream.payloadLength(), stream.maxPayloadLength());
-// }
+  Serial.println();
+  Serial.printf("Received stream payload size: %d (Max. %d)\n\n", stream.payloadLength(), stream.maxPayloadLength());
+}
 
-// void streamTimeoutCallback(bool timeout) {
-//   if (timeout)
-//     Serial.println("stream timed out, resuming...\n");
+void streamTimeoutCallback(bool timeout) {
+  if (timeout)
+    Serial.println("stream timed out, resuming...\n");
 
-//   if (!stream.httpConnected())
-//     Serial.printf("error code: %d, reason: %s\n\n", stream.httpCode(), stream.errorReason().c_str());
-// }
+  if (!stream.httpConnected())
+    Serial.printf("error code: %d, reason: %s\n\n", stream.httpCode(), stream.errorReason().c_str());
+}
 
 //--------- FIREBASE CALLBACKS ---------//
 
@@ -302,7 +302,7 @@ void rainVersionTwo() {//****rainVersionTwo****rainVersionTwo****rainVersionTwo*
       zold[addr] = z[addr];
     } 
 
-    delay(15);
+    delay(50);
     
     for(addr=0; addr<leds; addr++) {
       z[addr] = z[addr]-1;
@@ -590,7 +590,7 @@ void folder() { //****folder****folder****folder****folder****folder****folder**
       }
     } //front
 
-    delay(5); //DELAY   DELAY  DELAY
+    delay(25); //DELAY   DELAY  DELAY
     for (xx = 0; xx < 8; xx++) {
       LED_Old[xx] = folderaddr[xx];
       oldpullback[xx] = pullback[xx];
@@ -601,7 +601,7 @@ void folder() { //****folder****folder****folder****folder****folder****folder**
         pullback[zz] = pullback[zz] + 1;
 
       if (pullback[7] == 8) { //finished with fold
-        delay(10);
+        delay(50);
 
         ranselect = random(3);
         if (ranselect == 0) {
@@ -843,7 +843,7 @@ void bouncyvTwo() { //****bouncyTwo****bouncyTwo****bouncyTwo****bouncyTwo****bo
       oldy[addr] = y[addr];
       oldz[addr] = z[addr];
     }
-    delay(20);
+    delay(50);
 
     //direcTwo=random(3);  
     //if(direcTwo==1)
@@ -1020,8 +1020,7 @@ void sinwaveTwo() { //*****sinewaveTwo*****sinewaveTwo*****sinewaveTwo*****sinew
 
     for (addr = 0; addr < 8; addr++)
       sinewavearrayOLD[addr] = sinewavearray[addr];
-    delay(30);
-    delay(10);
+    delay(65);
 
   } //while
 
@@ -1044,7 +1043,7 @@ void color_wheel() {
           LED(xx, yy, zz, ranx, 0, rany);
         }
       }
-      delay(50);
+      delay(250);
     }
 
     ranx = random(16);
@@ -1056,7 +1055,7 @@ void color_wheel() {
           LED(xx, yy, zz, ranx, rany, 0);
         }
       }
-      delay(50);
+      delay(250);
     }
     ranx = random(16);
     rany = random(16);
@@ -1066,7 +1065,7 @@ void color_wheel() {
           LED(xx, yy, zz, 0, ranx, rany);
         }
       }
-      delay(50);
+      delay(250);
     }
 
     ranx = random(16);
@@ -1077,7 +1076,7 @@ void color_wheel() {
           LED(xx, yy, zz, rany, ranx, 0);
         }
       }
-      delay(50);
+      delay(250);
     }
 
   } //while
@@ -1115,7 +1114,7 @@ void color_wheelTWO() { //*****colorWheelTwo*****colorWheelTwo*****colorWheelTwo
             LED(xx, yy, zz, ranx, ranz, rany);
           }
         }
-        delay(30);
+        delay(60);
       }
     }
     if (swiper == 1) { //bot to top
@@ -1125,7 +1124,7 @@ void color_wheelTWO() { //*****colorWheelTwo*****colorWheelTwo*****colorWheelTwo
             LED(xx, yy, zz, ranx, ranz, rany);
           }
         }
-        delay(30);
+        delay(60);
       }
     }
     if (swiper == 2) { //back to front
@@ -1135,7 +1134,7 @@ void color_wheelTWO() { //*****colorWheelTwo*****colorWheelTwo*****colorWheelTwo
             LED(xx, yy, zz, ranx, ranz, rany);
           }
         }
-        delay(30);
+        delay(60);
       }
     }
     if (swiper == 3) {
@@ -1145,7 +1144,7 @@ void color_wheelTWO() { //*****colorWheelTwo*****colorWheelTwo*****colorWheelTwo
             LED(xx, yy, zz, ranx, ranz, rany);
           }
         }
-        delay(30);
+        delay(60);
       }
     }
     if (swiper == 4) { //top to bot
@@ -1155,7 +1154,7 @@ void color_wheelTWO() { //*****colorWheelTwo*****colorWheelTwo*****colorWheelTwo
             LED(xx, yy, zz, ranx, ranz, rany);
           }
         }
-        delay(30);
+        delay(60);
       }
     }
     if (swiper == 5) { //front to back
@@ -1165,7 +1164,7 @@ void color_wheelTWO() { //*****colorWheelTwo*****colorWheelTwo*****colorWheelTwo
             LED(xx, yy, zz, ranx, ranz, rany);
           }
         }
-        delay(30);
+        delay(60);
       }
     }
 
@@ -1187,187 +1186,50 @@ void harlem_shake() {
   int counter, i, j, k;
 
   while ( on == true) {
-    for (counter = 0; counter < 150; counter++) {
-      for (i = 0; i < 8; i++) {
-        LED(i, oredx, oredx, 0, 0, 0);
-      }
-      for (i = 0; i < 8; i++) {
-        LED(i, redx, redx, 15, 0, 0);
-      }
-
-      oredx = redx;
-      oredy = redy;
-
-      for (i = 100; i > time_counter; i--)
-        delay(1);
-
-      time_counter = time_counter + timemult;
-      if (time_counter > 100 || time_counter < 10)
-        timemult = timemult * -1;
-
-      if (redy > 6 || redy < 1) {
-        redmulty = redmulty * -1;
-
-      }
-
-      if (redx > 6 || redx < 1) {
-        redmult = redmult * -1;
-
-        cr1 = random(16);
-        cr2 = random(16);
-      }
-
-      redy = redy + redmulty;
-      redx = redx + redmult;
-    } //counter
-
-  for (counter = 0; counter < 85; counter++) {
-    for (i = 0; i < 8; i++) {
-      LED(i, oredx, oredx, 0, 0, 0);
-      LED(ogreenx, i, ogreeny, 0, 0, 0);
-    }
-    for (i = 0; i < 8; i++) {
-      LED(i, redx, redx, 15, 0, 0);
-      LED(greenx, i, greeny, 0, 15, 0);
-    }
-    ogreenx = greenx;
-    ogreeny = greeny;
-    oredx = redx;
-    oredy = redy;
-
-    for (i = 100; i > time_counter; i--)
-      delay(1);
-
-    time_counter = time_counter + timemult;
-    if (time_counter > 100 || time_counter < 10)
-      timemult = timemult * -1;
-
-    if (greeny > 6 || greeny < 1)
-      greenmulty = greenmulty * -1;
-
-    if (redy > 6 || redy < 1) {
-      redmulty = redmulty * -1;
-
-    }
-
-    if (greenx > 6 || greenx < 1) {
-      greenmult = greenmult * -1;
-      greeny = greeny + greenmulty;
-      cg1 = random(16);
-      cg2 = random(16);
-    }
-
-    if (redx > 6 || redx < 1) {
-      redmult = redmult * -1;
-
-      cr1 = random(16);
-      cr2 = random(16);
-    }
-    greenx = greenx + greenmult;
-
-    redy = redy + redmulty;
-    redx = redx + redmult;
-  } //counter
-
-  for (counter = 0; counter < 85; counter++) {
-    for (i = 0; i < 8; i++) {
-      LED(i, oredx, oredx, 0, 0, 0);
-      LED(obluey, obluex, i, 0, 0, 0);
-      LED(ogreenx, i, ogreeny, 0, 0, 0);
-    }
-    for (i = 0; i < 8; i++) {
-      LED(i, redx, redx, 15, 0, 0);
-      LED(bluey, bluex, i, 0, 0, 15);
-      LED(greenx, i, greeny, 0, 15, 0);
-    }
-    ogreenx = greenx;
-    ogreeny = greeny;
-    obluex = bluex;
-    obluey = bluey;
-    oredx = redx;
-    oredy = redy;
-
-    for (i = 100; i > time_counter; i--)
-      delay(1);
-
-    time_counter = time_counter + timemult;
-    if (time_counter > 100 || time_counter < 10)
-      timemult = timemult * -1;
-
-    if (greeny > 6 || greeny < 1)
-      greenmulty = greenmulty * -1;
-
-    if (bluey > 6 || bluey < 1)
-      bluemulty = bluemulty * -1;
-
-    if (redy > 6 || redy < 1) {
-      redmulty = redmulty * -1;
-
-    }
-
-    if (greenx > 6 || greenx < 1) {
-      greenmult = greenmult * -1;
-      greeny = greeny + greenmulty;
-      cg1 = random(16);
-      cg2 = random(16);
-    }
-    if (bluex > 6 || bluex < 1) {
-      bluemult = bluemult * -1;
-      bluey = bluey + bluemulty;
-      cb1 = random(16);
-      cb2 = random(16);
-    }
-    if (redx > 6 || redx < 1) {
-      redmult = redmult * -1;
-
-      cr1 = random(16);
-      cr2 = random(16);
-    }
-    greenx = greenx + greenmult;
-    bluex = bluex + bluemult;
-    redy = redy + redmulty;
-    redx = redx + redmult;
-  } //counter
 
   for (counter = 0; counter < 3; counter++) {
     for (i = 0; i < 8; i++)
       for (j = 0; j < 8; j++)
         for (k = 0; k < 8; k++)
           LED(i, j, k, 15, 15, 15);
-    delay(50);
+    delay(100);
     for (i = 0; i < 8; i++)
       for (j = 0; j < 8; j++)
         for (k = 0; k < 8; k++)
           LED(i, j, k, 0, 0, 0);
-    delay(50);
+    delay(100);
   } //counter
 
-  for (m = 0; m < 1; m++) {
+  // for (m = 0; m < 1; m++) {
 
-    for (i = 0; i < 8; i++)
-      for (j = 0; j < 8; j++)
-        for (k = 0; k < 8; k++)
-          LED(i, j, k, 0, random(16), random(16));
+  //   for (i = 0; i < 8; i++)
+  //     for (j = 0; j < 8; j++)
+  //       for (k = 0; k < 8; k++)
+  //         LED(i, j, k, 0, random(16), random(16));
+  //         delay(2);
 
-    for (i = 7; i >= 0; i--)
-      for (j = 0; j < 8; j++)
-        for (k = 0; k < 8; k++)
-          LED(i, j, k, random(16), 0, random(16));
+  //   for (i = 7; i >= 0; i--)
+  //     for (j = 0; j < 8; j++)
+  //       for (k = 0; k < 8; k++)
+  //         LED(i, j, k, random(16), 0, random(16));
+  //         delay(2);
 
-    for (i = 0; i < 8; i++)
-      for (j = 0; j < 8; j++)
-        for (k = 0; k < 8; k++)
-          LED(i, j, k, random(16), random(16), 0);
+  //   for (i = 0; i < 8; i++)
+  //     for (j = 0; j < 8; j++)
+  //       for (k = 0; k < 8; k++)
+  //         LED(i, j, k, random(16), random(16), 0);
+  //         delay(2);
 
-    for (i = 7; i >= 0; i--)
-      for (j = 0; j < 8; j++)
-        for (k = 0; k < 8; k++)
-          LED(i, j, k, random(16), 0, random(16));
-  }
+  //   for (i = 7; i >= 0; i--)
+  //     for (j = 0; j < 8; j++)
+  //       for (k = 0; k < 8; k++)
+  //         LED(i, j, k, random(16), 0, random(16));
+  //         delay(2);
+  // }
 
   clean();
 
-  for (m = 0; m < 3; m++) {
+  for (m = 0; m < 16; m++) {
     for (k = 0; k < 200; k++) {
       LED(random(8), random(8), random(8), random(16), random(16), 0);
       LED(random(8), random(8), random(8), random(16), 0, random(16));
@@ -1379,6 +1241,7 @@ void harlem_shake() {
     }
     for (k = 0; k < 200; k++) {
       LED(random(8), random(8), random(8), 0, 0, 0);
+      delay(2);
     }
 
   } //m
@@ -1535,7 +1398,7 @@ void harlem_shake() {
       yo = y;
       zo = z;
 
-      delay(45);
+      delay(50);
 
       x = x + xmult;
       y = y + ymult;
@@ -1732,7 +1595,7 @@ void harlem_shake() {
           LED(num4 - 1, 7, i, 0, 0, 15);
           LED(num4 - 1, i, 7, 0, 0, 15);
         }
-        //delay(1);
+        delay(2);
       } //m
     } //counter
   }
@@ -1780,47 +1643,47 @@ void setup() {
   interrupts();
 
 
-  // // WIFI AND FIREBASE
-  // WiFi.begin(WIFI_SSID, WIFI_PASSWORD);
-  // Serial.print("Connecting to Wi-Fi");
-  // while (WiFi.status() != WL_CONNECTED) {
-  //   Serial.print(".");
-  //   delay(300);
-  // }
-  // Serial.println();
-  // Serial.print("Connected with IP: ");
-  // Serial.println(WiFi.localIP());
-  // Serial.println();
+  // WIFI AND FIREBASE
+  WiFi.begin(WIFI_SSID, WIFI_PASSWORD);
+  Serial.print("Connecting to Wi-Fi");
+  while (WiFi.status() != WL_CONNECTED) {
+    Serial.print(".");
+    delay(300);
+  }
+  Serial.println();
+  Serial.print("Connected with IP: ");
+  Serial.println(WiFi.localIP());
+  Serial.println();
 
-  // Serial.printf("Firebase Client v%s\n\n", FIREBASE_CLIENT_VERSION);
+  Serial.printf("Firebase Client v%s\n\n", FIREBASE_CLIENT_VERSION);
 
-  // /* Assign the api key (required) */
-  // config.api_key = API_KEY;
+  /* Assign the api key (required) */
+  config.api_key = API_KEY;
 
-  // /* Assign the user sign in credentials */
-  // auth.user.email = USER_EMAIL;
-  // auth.user.password = USER_PASSWORD;
+  /* Assign the user sign in credentials */
+  auth.user.email = USER_EMAIL;
+  auth.user.password = USER_PASSWORD;
 
-  // /* Assign the RTDB URL (required) */
-  // config.database_url = DATABASE_URL;
+  /* Assign the RTDB URL (required) */
+  config.database_url = DATABASE_URL;
 
-  // /* Assign the callback function for the long running token generation task */
-  // config.token_status_callback = tokenStatusCallback; // see addons/TokenHelper.h
+  /* Assign the callback function for the long running token generation task */
+  config.token_status_callback = tokenStatusCallback; // see addons/TokenHelper.h
 
-  // Firebase.begin(&config, &auth);
+  Firebase.begin(&config, &auth);
 
-  // Firebase.reconnectWiFi(true);
+  Firebase.reconnectWiFi(true);
 
-  // if (!Firebase.RTDB.beginMultiPathStream(&stream, parentPath))
-  //   Serial.printf("stream begin error, %s\n\n", stream.errorReason().c_str());
+  if (!Firebase.RTDB.beginMultiPathStream(&stream, parentPath))
+    Serial.printf("stream begin error, %s\n\n", stream.errorReason().c_str());
 
-  // Firebase.RTDB.setMultiPathStreamCallback(&stream, streamCallback, streamTimeoutCallback);
-  // // WIFI AND FIREBASE
+  Firebase.RTDB.setMultiPathStreamCallback(&stream, streamCallback, streamTimeoutCallback);
+  // WIFI AND FIREBASE
 
   // int timerScale = 800;
   //SETTINGS//
   // Bright : 800 - 100 : Flicker-free
-  My_timer = timerBegin(0, 800, true);
+  My_timer = timerBegin(0, 100, true);
   timerAttachInterrupt(My_timer, &onTimer, true);
   timerAlarmWrite(My_timer, 175, true); // DO NOT CHANGE
   timerAlarmEnable(My_timer);
@@ -1863,14 +1726,7 @@ void handleAnimation (bool on, int selected) {
 
 void loop() {
 
-  // if (Firebase.ready()) {}
-  // handleAnimation(on, selected);
-
-  rainVersionTwo();
-  folder();
-  sinwaveTwo();
-  bouncyvTwo();
-  color_wheelTWO();
-  harlem_shake();
+  if (Firebase.ready()) {}
+  handleAnimation(on, selected);
 
 }
