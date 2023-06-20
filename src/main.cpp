@@ -23,6 +23,7 @@ String childPath[2] = {"/on", "/selected"};
 bool on = false;
 int selected = 0;
 
+
 //--------- FIREBASE CALLBACKS ---------//
 
 void streamCallback(MultiPathStream stream) {
@@ -65,6 +66,8 @@ void streamCallback(MultiPathStream stream) {
           selected = 5;
         } else if (value == "Harlem Shake") {
           selected = 6;
+        } else if (value == "BINUS") {
+          selected = 7;
         } else {
           selected = 0;
         }
@@ -215,7 +218,93 @@ void IRAM_ATTR onTimer(){
 
 }
 
+void LEDWrapper(int level, int row, int column, byte red, byte green, byte blue) {
+  if (blue > 0) {
+    if (row < 4) {
+      if (row == 3 && column == 0) {
+        LED(level, 4, 7, red, green, blue);
+      } else if (row == 2 && column == 0) {
+        LED(level, 3, 7, red, green, blue);
+      } else if (row == 1 && column == 0) {
+        LED(level, 2, 7, red, green, blue);
+      } else if (row == 0 && column == 0) {
+        LED(level, 1, 7, red, green, blue);
+      } else {
+        int colshift = (column + 7) % 8;
+        LED(level, row, colshift, red, green, blue);
+      }
+    } else {
+      if (row == 4 && column == 7) {
+      LED(level, 3, 6, red, green, blue); // unsavable
+      } else {
+        int colshift = (column + 8) % 8;
+        LED(level, row, colshift, red, green, blue);
+      }
+    }
+  }
+  if (green > 0) {
+    if (row < 4) {
+      if (row == 3 && column == 0) {
+        LED(level, 4, 6, red, green, blue);
+      } else if (row == 2 && column == 0) {
+        LED(level, 3, 6, red, green, blue);
+      } else if (row == 1 && column == 0) {
+        LED(level, 2, 6, red, green, blue);
+      } else if (row == 0 && column == 0) {
+        LED(level, 1, 6, red, green, blue);
+      } else if(row == 7 && column == 1) {
+        LED(level, 0, 5, red, green, blue);
+      } else if(row == 0 && column == 7) {
+        
+      } else {
+        int colshift = (column + 6) % 8;
+        LED(level, row, colshift, red, green, blue);
+      }
 
+    } else {
+      int colshift = (column + 7) % 8;
+      LED(level, row, colshift, red, green, blue);
+    }
+  }
+  if(red > 0) {
+    if(row == 7 && column == 0) {
+      LED(level, 0, 6, green, red, blue);
+    }else if(row == 7 && column == 1) {
+      LED(level, 0, 7, green, red, blue);
+    } else if(row == 6 && column == 0) {
+      LED(level, 7, 6, red, green, blue);
+    } else if(row == 5 && column == 0) {
+      LED(level, 6, 6, red, green, blue);
+  } else if(row == 4 && column == 0) {
+      LED(level, 5, 6, red, green, blue);
+    } else if(row == 3 && column == 0) {
+      LED(level, 4, 6, red, green, blue);
+    } else if(row == 2 && column == 0) {
+      LED(level, 3, 6, red, green, blue);
+    } else if(row == 1 && column == 0) {
+      LED(level, 2, 6, red, green, blue);
+    } else if(row == 0 && column == 0) {
+      LED(level, 1, 6, red, green, blue);
+    } else if(row == 6 && column == 1) {
+      LED(level, 7, 7, red, green, blue);
+    } else if(row == 5 && column == 1) {
+      LED(level, 6, 7, red, green, blue);
+    } else if(row == 4 && column == 1) {
+      LED(level, 5, 7, red, green, blue);
+    } else if(row == 3 && column == 1) {
+      LED(level, 4, 7, red, green, blue);
+    } else if(row == 2 && column == 1) {
+      LED(level, 3, 7, red, green, blue);
+    } else if(row == 1 && column == 1) {
+      LED(level, 2, 7, red, green, blue);
+    } else if(row == 0 && column == 1) {
+      LED(level, 1, 7, red, green, blue);
+    } else {
+      int colshift = (column + 6) % 8;
+      LED(level, row, colshift, red, green, blue);
+    }
+  }
+}
 // ------------ Animations START ------------ //
 
 void clean() {
@@ -1283,8 +1372,8 @@ void harlem_shake() {
   }
 
     for (counter = 0; counter < 200; counter++) {
-
-      LED(xo, yo, zo, 0, 0, 0);
+      while ( on == true) {
+        LED(xo, yo, zo, 0, 0, 0);
       LED(xo + 1, yo, zo, 0, 0, 0);
       LED(xo + 2, yo, zo, 0, 0, 0);
       LED(xo - 1, yo, zo, 0, 0, 0);
@@ -1457,11 +1546,15 @@ void harlem_shake() {
         //z=0;
         z2mult = random(0, 2);
       }
-
+      }
     } //counter  counter counter counter counter
 
+
+      
+
     for (counter = 0; counter < 15; counter++) {
-      color_select = random(0, 3);
+      while (on == true) {
+        color_select = random(0, 3);
       if (color_select == 0) {
         c1 = 0;
         c2 = random(0, 16);
@@ -1598,11 +1691,162 @@ void harlem_shake() {
         delay(2);
       } //m
     } //counter
+      }
   }
   
 
 } //harlem SHake
 
+
+void hurufB(int row, int shift) {
+  // huruf B
+  LEDWrapper(6, row, 4 + shift, 15, 15, 0);
+  LEDWrapper(6, row, 3 + shift, 15, 15, 0);
+  LEDWrapper(6, row, 1 + shift, 15, 15, 0);
+  LEDWrapper(6, row, 2 + shift, 15, 15, 0);
+
+  LEDWrapper(5, row, 4 + shift, 15, 15, 0);
+  LEDWrapper(4, row, 4 + shift, 15, 15, 0);
+  LEDWrapper(3, row, 4 + shift, 15, 15, 0);
+  LEDWrapper(2, row, 4 + shift, 15, 15, 0);
+  LEDWrapper(1, row, 4 + shift, 15, 15, 0);
+  LEDWrapper(0, row, 4 + shift, 15, 15, 0);
+
+  LEDWrapper(3, row, 1 + shift, 15, 15, 0);
+  LEDWrapper(3, row, 2 + shift, 15, 15, 0);
+  LEDWrapper(3, row, 3 + shift, 15, 15, 0);
+
+  LEDWrapper(0, row, 1 + shift, 15, 15, 0);
+  LEDWrapper(0, row, 2 + shift, 15, 15, 0);
+  LEDWrapper(0, row, 3 + shift, 15, 15, 0);
+
+  LEDWrapper(5, row, 0 + shift, 15, 15, 0);
+  LEDWrapper(4, row, 0 + shift, 15, 15, 0);
+  LEDWrapper(2, row, 0 + shift, 15, 15, 0);
+  LEDWrapper(1, row, 0 + shift, 15, 15, 0);
+
+
+  // huruf I
+  
+}
+
+void hurufI(int row, int shift) {
+  LEDWrapper(6, row, 0 + shift, 0, 0, 15);
+  LEDWrapper(6, row, 1 + shift, 0, 0, 15);
+  LEDWrapper(6, row, 2 + shift, 0, 0, 15);
+  LEDWrapper(6, row, 3 + shift, 0, 0, 15);
+  LEDWrapper(6, row, 4 + shift, 0, 0, 15);
+
+  LEDWrapper(5, row, 2 + shift, 0, 0, 15);
+  LEDWrapper(4, row, 2 + shift, 0, 0, 15);
+  LEDWrapper(3, row, 2 + shift, 0, 0, 15);
+  LEDWrapper(2, row, 2 + shift, 0, 0, 15);
+  LEDWrapper(1, row, 2 + shift, 0, 0, 15);
+
+  LEDWrapper(0, row, 0 + shift, 0, 0, 15);
+  LEDWrapper(0, row, 1 + shift, 0, 0, 15);
+  LEDWrapper(0, row, 2 + shift, 0, 0, 15);
+  LEDWrapper(0, row, 3 + shift, 0, 0, 15);
+  LEDWrapper(0, row, 4 + shift, 0, 0, 15);
+}
+
+void hurufN(int row, int shift) {
+  LEDWrapper(6, row, 0 + shift, 15, 0, 0);
+  LEDWrapper(5, row, 0 + shift, 15, 0, 0);
+  LEDWrapper(4, row, 0 + shift, 15, 0, 0);
+  LEDWrapper(3, row, 0 + shift, 15, 0, 0);
+  LEDWrapper(2, row, 0 + shift, 15, 0, 0);
+  LEDWrapper(1, row, 0 + shift, 15, 0, 0);
+  LEDWrapper(0, row, 0 + shift, 15, 0, 0);
+
+  LEDWrapper(4, row, 3 + shift, 15, 0, 0);
+  LEDWrapper(3, row, 2 + shift, 15, 0, 0);
+  LEDWrapper(2, row, 1 + shift, 15, 0, 0);
+
+  LEDWrapper(6, row, 4 + shift, 15, 0, 0);
+  LEDWrapper(5, row, 4 + shift, 15, 0, 0);
+  LEDWrapper(4, row, 4 + shift, 15, 0, 0);
+  LEDWrapper(3, row, 4 + shift, 15, 0, 0);
+  LEDWrapper(2, row, 4 + shift, 15, 0, 0);
+  LEDWrapper(1, row, 4 + shift, 15, 0, 0);
+  LEDWrapper(0, row, 4 + shift, 15, 0, 0);
+}
+
+void hurufU(int row, int shift) {
+  LEDWrapper(6, row, 0 + shift, 0, 0, 15);
+  LEDWrapper(5, row, 0 + shift, 0, 0, 15);
+  LEDWrapper(4, row, 0 + shift, 0, 0, 15);
+  LEDWrapper(3, row, 0 + shift, 0, 0, 15);
+  LEDWrapper(2, row, 0 + shift, 0, 0, 15);
+  LEDWrapper(1, row, 0 + shift, 0, 0, 15);
+
+  LEDWrapper(0, row, 3 + shift, 0, 0, 15);
+  LEDWrapper(0, row, 2 + shift, 0, 0, 15);
+  LEDWrapper(0, row, 1 + shift, 0, 0, 15);
+
+  LEDWrapper(6, row, 4 + shift, 0, 0, 15);
+  LEDWrapper(5, row, 4 + shift, 0, 0, 15);
+  LEDWrapper(4, row, 4 + shift, 0, 0, 15);
+  LEDWrapper(3, row, 4 + shift, 0, 0, 15);
+  LEDWrapper(2, row, 4 + shift, 0, 0, 15);
+  LEDWrapper(1, row, 4 + shift, 0, 0, 15);
+}
+
+void hurufS(int row, int shift) {
+  LEDWrapper(6, row, 0 + shift, 0, 0, 15);
+  LEDWrapper(6, row, 3 + shift, 0, 0, 15);
+  LEDWrapper(6, row, 1 + shift, 0, 0, 15);
+  LEDWrapper(6, row, 2 + shift, 0, 0, 15);
+
+  LEDWrapper(2, row, 0 + shift, 0, 0, 15);
+  LEDWrapper(1, row, 0 + shift, 0, 0, 15);
+
+  LEDWrapper(3, row, 1 + shift, 0, 0, 15);
+  LEDWrapper(3, row, 2 + shift, 0, 0, 15);
+  LEDWrapper(3, row, 3 + shift, 0, 0, 15);
+
+  LEDWrapper(4, row, 4 + shift, 0, 0, 15);
+  LEDWrapper(5, row, 4 + shift, 0, 0, 15);
+
+  LEDWrapper(0, row, 4 + shift, 0, 0, 15);
+  LEDWrapper(0, row, 3 + shift, 0, 0, 15);
+  LEDWrapper(0, row, 1 + shift, 0, 0, 15);
+  LEDWrapper(0, row, 2 + shift, 0, 0, 15);
+}
+
+void displayBINUS(){
+  int b = 0, i = 0, n = 0, u = 0 , s = 0;
+  int del = 350;
+  for (int slice = 0; slice < 17; slice++) {
+    if (slice < 5) {
+
+      hurufB(0, b);
+      b++;
+    }
+    if (slice < 8 && slice > 3) {
+
+      hurufI(1, i);
+      i++;
+    }
+    if (slice < 11 && slice > 6) {
+
+      hurufN(2, n);
+      n++;
+    }
+    if (slice < 14 && slice > 9) {
+
+      hurufU(3, u);
+      u++;
+    }
+    if (slice < 17 && slice > 12) {
+
+      hurufS(4, s);
+      s++;
+    }
+    delay(del);
+    clean();
+  }
+}
 
 // ------------ Animations   END ------------ //
 
@@ -1711,6 +1955,9 @@ void handleAnimation (bool on, int selected) {
     case 6:
       harlem_shake();
       break;
+    case 7:
+      displayBINUS();
+      break;
     
     default:
       clean();
@@ -1724,9 +1971,9 @@ void handleAnimation (bool on, int selected) {
   }
 }
 
+
 void loop() {
 
   if (Firebase.ready()) {}
   handleAnimation(on, selected);
-
 }
