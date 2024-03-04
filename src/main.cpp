@@ -1,113 +1,118 @@
 #include <Arduino.h>
 #include <SPI.h>
 
-#include <WiFi.h>
-#include <Firebase.h>
-#include <credentials.h>
+// #include <WiFi.h>
+// #include <Firebase.h>
+//#include <credentials.h>
 
 // Provide the token generation process info.
-#include <addons/TokenHelper.h>
+//#include <addons/TokenHelper.h>
 
 // Provide the RTDB payload printing info and other helper functions.
-#include <addons/RTDBHelper.h>
+//#include <addons/RTDBHelper.h>
 
-FirebaseData stream;
-FirebaseData fbdo;
+// FirebaseData stream;
+// FirebaseData fbdo;
 
-FirebaseAuth auth;
-FirebaseConfig config;
+// FirebaseAuth auth;
+// FirebaseConfig config;
 
-String parentPath = "/ledState";
-String childPath[2] = {"/on", "/selected"};
+// String parentPath = "/ledState";
+// String childPath[2] = {"/on", "/selected"};
 
 bool on = false;
-int selected = 0;
+// int selected = 0;
 
 
 //--------- FIREBASE CALLBACKS ---------//
 
-void streamCallback(MultiPathStream stream) {
-  size_t numChild = sizeof(childPath) / sizeof(childPath[0]);
-  Serial.println("\nStreamCallback");
+// void streamCallback(MultiPathStream stream) {
+//   size_t numChild = sizeof(childPath) / sizeof(childPath[0]);
+//   Serial.println("\nStreamCallback");
 
-  for (size_t i = 0; i < numChild; i++) {
-    Serial.println("StreamCallback Loop");
-    Serial.println(childPath[i]);
-    if (stream.get(childPath[i])) {
-      Serial.printf("path: %s, event: %s, type: %s, value: %s%s", stream.dataPath.c_str(), stream.eventType.c_str(), stream.type.c_str(), stream.value.c_str(), i < numChild - 1 ? "\n" : "");
+//   for (size_t i = 0; i < numChild; i++) {
+//     Serial.println("StreamCallback Loop");
+//     Serial.println(childPath[i]);
+//     if (stream.get(childPath[i])) {
+//       Serial.printf("path: %s, event: %s, type: %s, value: %s%s", stream.dataPath.c_str(), stream.eventType.c_str(), stream.type.c_str(), stream.value.c_str(), i < numChild - 1 ? "\n" : "");
 
-      const char* childPath = stream.dataPath.c_str();
+//       const char* childPath = stream.dataPath.c_str();
       
-      // Perform different actions based on the child path
-      if (strcmp(childPath, "/on") == 0) {
-        String value = stream.value.c_str();
-        Serial.println("Change in path 1");
-        if (value == "true") {
-          digitalWrite(BUILTIN_LED, HIGH);
-          on = true;
-        } else {
-          digitalWrite(BUILTIN_LED, LOW);
-          on = false;
-        }
-        Serial.print("On Value: ");
-        Serial.println(on);
-      } else if (strcmp(childPath, "/selected") == 0) {
-        String value = stream.value.c_str();
-        Serial.println("Change in path 2");
-        if (value == "Rain Wave") {
-          selected = 1;
-        } else if (value == "Folder") {
-          selected = 2;
-        } else if (value == "Sinewave") {
-          selected = 3;
-        } else if (value == "Bouncy") {
-          selected = 4;
-        } else if (value == "Color Wheel") {
-          selected = 5;
-        } else if (value == "Harlem Shake") {
-          selected = 6;
-        } else if (value == "BINUS") {
-          selected = 7;
-        } else {
-          selected = 0;
-        }
-        Serial.print("Selected Value: ");
-        Serial.println(selected);
-      }
-    } else {
-      Serial.println("StreamCallback Error");
-    }
-  }
+//       // Perform different actions based on the child path
+//       if (strcmp(childPath, "/on") == 0) {
+//         String value = stream.value.c_str();
+//         Serial.println("Change in path 1");
+//         if (value == "true") {
+//           digitalWrite(BUILTIN_LED, HIGH);
+//           on = true;
+//         } else {
+//           digitalWrite(BUILTIN_LED, LOW);
+//           on = false;
+//         }
+//         Serial.print("On Value: ");
+//         Serial.println(on);
+//       } else if (strcmp(childPath, "/selected") == 0) {
+//         String value = stream.value.c_str();
+//         Serial.println("Change in path 2");
+//         if (value == "Rain Wave") {
+//           selected = 1;
+//         } else if (value == "Folder") {
+//           selected = 2;
+//         } else if (value == "Sinewave") {
+//           selected = 3;
+//         } else if (value == "Bouncy") {
+//           selected = 4;
+//         } else if (value == "Color Wheel") {
+//           selected = 5;
+//         } else if (value == "Harlem Shake") {
+//           selected = 6;
+//         } else if (value == "BINUS") {
+//           selected = 7;
+//         } else {
+//           selected = 0;
+//         }
+//         Serial.print("Selected Value: ");
+//         Serial.println(selected);
+//       }
+//     } else {
+//       Serial.println("StreamCallback Error");
+//     }
+//   }
 
-  Serial.println();
-  Serial.printf("Received stream payload size: %d (Max. %d)\n\n", stream.payloadLength(), stream.maxPayloadLength());
-}
+//   Serial.println();
+//   Serial.printf("Received stream payload size: %d (Max. %d)\n\n", stream.payloadLength(), stream.maxPayloadLength());
+// }
 
-void streamTimeoutCallback(bool timeout) {
-  if (timeout)
-    Serial.println("stream timed out, resuming...\n");
+// void streamTimeoutCallback(bool timeout) {
+//   if (timeout)
+//     Serial.println("stream timed out, resuming...\n");
 
-  if (!stream.httpConnected())
-    Serial.printf("error code: %d, reason: %s\n\n", stream.httpCode(), stream.errorReason().c_str());
-}
+//   if (!stream.httpConnected())
+//     Serial.printf("error code: %d, reason: %s\n\n", stream.httpCode(), stream.errorReason().c_str());
+// }
 
 //--------- FIREBASE CALLBACKS ---------//
-
+// 74HC595N
 #define latch_pin 4
 #define blank_pin 22
 #define data_pin 23
 #define clock_pin 18
-#define outE_pin 21 
+// Rotary encoders
+#define outputA 2
+#define outputB 15
 
+volatile int counter = 0;
+int aState;
+int aLastState;
 int shift_out;
-byte anode[8];
+char16_t cathode[12];
 
 byte red0[64], red1[64], red2[64], red3[64];
 byte blue0[64], blue1[64], blue2[64], blue3[64];
 byte green0[64], green1[64], green2[64], green3[64];
 
 int level = 0;
-int anodelevel = 0;
+int cathodelevel = 0;
 int BAM_Bit, BAM_Counter = 0;
 
 unsigned long start;
@@ -200,17 +205,17 @@ void IRAM_ATTR onTimer(){
         }
         break;
   }
-  SPI.transfer(anode[anodelevel]);
+  SPI.transfer(cathode[cathodelevel]);
 
   digitalWrite(latch_pin, HIGH);
   digitalWrite(latch_pin,LOW);
   digitalWrite(blank_pin, LOW);
 
-  anodelevel++;
+  cathodelevel++;
   level = level + 8;
 
-  if (anodelevel == 8){
-    anodelevel = 0;
+  if (cathodelevel == 8){
+    cathodelevel = 0;
   }
   if (level == 64){
     level = 0;
@@ -1860,14 +1865,18 @@ void setup() {
   SPI.setDataMode(SPI_MODE0);
   SPI.setFrequency(16000000);
 
-  anode[7]=B00000001;
-  anode[6]=B00000010;
-  anode[5]=B00000100;
-  anode[4]=B00001000;
-  anode[3]=B00010000;
-  anode[2]=B00100000;
-  anode[1]=B01000000;
-  anode[0]=B10000000;
+  cathode[11]=0B000000000001;
+  cathode[10]=0B000000000010;
+  cathode[9]=0B000000000100;
+  cathode[8]=0B000000001000;
+  cathode[7]=0B000000010000;
+  cathode[6]=0B000000100000;
+  cathode[5]=0B000001000000;
+  cathode[4]=0B000010000000;
+  cathode[3]=0B000100000000;
+  cathode[2]=0B001000000000;
+  cathode[1]=0B010000000000;
+  cathode[0]=0B100000000000;
 
   pinMode(latch_pin, OUTPUT);
   pinMode(data_pin, OUTPUT);
@@ -1880,63 +1889,120 @@ void setup() {
   delay(1000);
   digitalWrite(blank_pin, LOW);
 
-  pinMode(outE_pin, OUTPUT);
-  digitalWrite(outE_pin, HIGH);
+  // pinMode(outE_pin, OUTPUT);
+  // digitalWrite(outE_pin, HIGH);
 
   SPI.begin();
   interrupts();
 
 
   // WIFI AND FIREBASE
-  WiFi.begin(WIFI_SSID, WIFI_PASSWORD);
-  Serial.print("Connecting to Wi-Fi");
-  while (WiFi.status() != WL_CONNECTED) {
-    Serial.print(".");
-    delay(300);
-  }
-  Serial.println();
-  Serial.print("Connected with IP: ");
-  Serial.println(WiFi.localIP());
-  Serial.println();
+  // WiFi.begin(WIFI_SSID, WIFI_PASSWORD);
+  // Serial.print("Connecting to Wi-Fi");
+  // while (WiFi.status() != WL_CONNECTED) {
+  //   Serial.print(".");
+  //   delay(300);
+  // }
+  // Serial.println();
+  // Serial.print("Connected with IP: ");
+  // Serial.println(WiFi.localIP());
+  // Serial.println();
 
-  Serial.printf("Firebase Client v%s\n\n", FIREBASE_CLIENT_VERSION);
+  // Serial.printf("Firebase Client v%s\n\n", FIREBASE_CLIENT_VERSION);
 
-  /* Assign the api key (required) */
-  config.api_key = API_KEY;
+  // /* Assign the api key (required) */
+  // config.api_key = API_KEY;
 
-  /* Assign the user sign in credentials */
-  auth.user.email = USER_EMAIL;
-  auth.user.password = USER_PASSWORD;
+  // /* Assign the user sign in credentials */
+  // auth.user.email = USER_EMAIL;
+  // auth.user.password = USER_PASSWORD;
 
-  /* Assign the RTDB URL (required) */
-  config.database_url = DATABASE_URL;
+  // /* Assign the RTDB URL (required) */
+  // config.database_url = DATABASE_URL;
 
-  /* Assign the callback function for the long running token generation task */
-  config.token_status_callback = tokenStatusCallback; // see addons/TokenHelper.h
+  // /* Assign the callback function for the long running token generation task */
+  // config.token_status_callback = tokenStatusCallback; // see addons/TokenHelper.h
 
-  Firebase.begin(&config, &auth);
+  // Firebase.begin(&config, &auth);
 
-  Firebase.reconnectWiFi(true);
+  // Firebase.reconnectWiFi(true);
 
-  if (!Firebase.RTDB.beginMultiPathStream(&stream, parentPath))
-    Serial.printf("stream begin error, %s\n\n", stream.errorReason().c_str());
+  // if (!Firebase.RTDB.beginMultiPathStream(&stream, parentPath))
+  //   Serial.printf("stream begin error, %s\n\n", stream.errorReason().c_str());
 
-  Firebase.RTDB.setMultiPathStreamCallback(&stream, streamCallback, streamTimeoutCallback);
-  // WIFI AND FIREBASE
+  // Firebase.RTDB.setMultiPathStreamCallback(&stream, streamCallback, streamTimeoutCallback);
+  // // WIFI AND FIREBASE
 
-  // int timerScale = 800;
-  //SETTINGS//
-  // Bright : 800 - 100 : Flicker-free
-  My_timer = timerBegin(0, 100, true);
-  timerAttachInterrupt(My_timer, &onTimer, true);
-  timerAlarmWrite(My_timer, 175, true); // DO NOT CHANGE
-  timerAlarmEnable(My_timer);
+  // // int timerScale = 800;
+  // //SETTINGS//
+  // // Bright : 800 - 100 : Flicker-free
+  // My_timer = timerBegin(0, 100, true);
+  // timerAttachInterrupt(My_timer, &onTimer, true);
+  // timerAlarmWrite(My_timer, 175, true); // DO NOT CHANGE
+  // timerAlarmEnable(My_timer);
 }
 
-void handleAnimation (bool on, int selected) {
-  if (on) {
-    Serial.println("ANIMATIONS ON");
-    switch (selected) {
+// void handleAnimation (bool on, int selected) {
+//   if (on) {
+//     Serial.println("ANIMATIONS ON");
+//     switch (selected) {
+//     case 1:
+//       rainVersionTwo();
+//       break;
+//     case 2:
+//       folder();
+//       break;
+//     case 3:
+//       sinwaveTwo();
+//       break;
+//     case 4:
+//       bouncyvTwo();
+//       break;
+//     case 5:
+//       color_wheelTWO();
+//       break;
+//     case 6:
+//       harlem_shake();
+//       break;
+//     case 7:
+//       displayBINUS();
+//       break;
+    
+//     default:
+//       clean();
+//       Serial.println("exception");
+//       break;
+//     }
+
+//   } else {
+//     clean();
+//     Serial.print(".");
+//   }
+// }
+
+void knobEncoderTask() {
+  aLastState = digitalRead(outputA);
+
+  while (1) {
+    aState = digitalRead(outputA);
+
+    if (aState != aLastState) {
+      if (digitalRead(outputB) != aState) {
+        counter++;
+        if (counter >= 4) {
+          counter = 4;
+        }
+      } else {
+        counter--;
+        if (counter <= 0) {
+          counter = 0;
+        }
+      }
+    Serial.println(counter);
+    }
+    aLastState = aState;
+    
+    switch (counter) {
     case 1:
       rainVersionTwo();
       break;
@@ -1964,16 +2030,11 @@ void handleAnimation (bool on, int selected) {
       Serial.println("exception");
       break;
     }
-
-  } else {
-    clean();
-    Serial.print(".");
+    // Add any additional code related to knob_encoder here
   }
 }
 
 
 void loop() {
-
-  if (Firebase.ready()) {}
-  handleAnimation(on, selected);
+  knobEncoderTask();
 }
